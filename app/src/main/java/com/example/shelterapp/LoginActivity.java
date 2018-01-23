@@ -348,6 +348,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         }
     }
 
+    /*Register button caller method - new registration activity starts*/
     public void newRegistration(View view) {
         Intent myIntent = new Intent(getBaseContext(), RegistrationActivity.class);
         startActivity(myIntent);
