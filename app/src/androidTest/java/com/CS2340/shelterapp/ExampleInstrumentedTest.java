@@ -1,4 +1,4 @@
-package com.example.shelterapp;
+package com.CS2340.shelterapp;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
