@@ -1,0 +1,23 @@
+<resources>
+    <!-- The following API key belongs to Farzam TN
+
+    To get one, follow this link, follow the directions and press "Create" at the end:
+
+    https://console.developers.google.com/flows/enableapi?apiid=maps_android_backend&keyType=CLIENT_SIDE_ANDROID&r=B5:E3:DC:68:40:51:F9:B5:20:11:A7:B7:76:3F:1C:6B:1F:24:88:CD%3Bcom.example.shelterapp
+
+    You can also add your credentials to an existing key, using these values:
+
+    Package name:
+    B5:E3:DC:68:40:51:F9:B5:20:11:A7:B7:76:3F:1C:6B:1F:24:88:CD
+
+    SHA-1 certificate fingerprint:
+    B5:E3:DC:68:40:51:F9:B5:20:11:A7:B7:76:3F:1C:6B:1F:24:88:CD
+
+    Alternatively, follow the directions here:
+    https://developers.google.com/maps/documentation/android/start#get-key
+
+    Once you have your key (it starts with "AIza"), replace the "google_maps_key"
+    string in this file.
+    -->
+    <string name="google_maps_key" templateMergeStrategy="preserve" translatable="false">AIzaSyBb2ybzBGkptiEfGnQU3HuWAdbW__nUv0c</string>
+</resources>

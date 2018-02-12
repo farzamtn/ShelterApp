@@ -1,4 +1,5 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -8,7 +9,7 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.example.shelterapp.LoginActivity">
+    tools:context="com.CS2340.shelterapp.LoginActivity">
 
     <!-- Login progress -->
     <ProgressBar
@@ -18,6 +19,12 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         android:visibility="gone" />
+
+    <ImageView
+        android:id="@+id/gt_logo_login"
+        android:layout_width="match_parent"
+        android:layout_height="199dp"
+        app:srcCompat="@drawable/gt_full_logo" />
 
     <ScrollView
         android:id="@+id/login_form"
@@ -34,11 +41,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-                <AutoCompleteTextView
-                    android:id="@+id/email"
+                <EditText
+                    android:id="@+id/username"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/prompt_email"
+                    android:hint="@string/prompt_username"
                     android:inputType="textEmailAddress"
                     android:maxLines="1"
                     android:singleLine="true" />
@@ -70,6 +77,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:background="?attr/actionModeSplitBackground"
+                android:onClick="newLogin"
                 android:text="@string/action_sign_in"
                 android:textColor="@android:color/background_light"
                 android:textStyle="bold" />
@@ -85,6 +93,15 @@
                 android:text="@string/action_register"
                 android:textColor="@android:color/background_light"
                 android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/textView2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:text="© CS 2340 - Team 29 - Spring 2018"
+                android:textColor="@android:color/black" />
 
         </LinearLayout>
 
