@@ -1,8 +1,9 @@
-package com.CS2340.shelterapp;
+package com.CS2340.shelterapp.Controller;
 
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 
+import com.CS2340.shelterapp.R;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -16,7 +17,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
  * @author Farzam
  * @version 1.0
  */
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
+public class MapsFragment extends FragmentActivity implements OnMapReadyCallback {
 
     //TODO: Farzam: Link this page to the MapsMasterActivity main UI
     private GoogleMap mMap;

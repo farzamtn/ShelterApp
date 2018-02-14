@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.CS2340.shelterapp.RegistrationActivity">
+    tools:context="com.CS2340.shelterapp.Controller.RegistrationActivity">
 
     <Button
         android:id="@+id/newRegister_button"

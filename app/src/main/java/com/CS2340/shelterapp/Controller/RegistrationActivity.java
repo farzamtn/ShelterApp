@@ -1,9 +1,11 @@
-package com.CS2340.shelterapp;
+package com.CS2340.shelterapp.Controller;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
+
+import com.CS2340.shelterapp.R;
 
 /**
  * A registration screen that offers Shelter App registration.

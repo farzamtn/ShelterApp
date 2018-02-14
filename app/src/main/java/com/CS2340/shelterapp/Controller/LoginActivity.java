@@ -1,4 +1,4 @@
-package com.CS2340.shelterapp;
+package com.CS2340.shelterapp.Controller;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -15,6 +15,11 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.CS2340.shelterapp.Model.Login;
+import com.CS2340.shelterapp.R;
+
+import java.util.HashMap;
+
 /**
  * A login screen that offers login via email/password.
  *
@@ -24,12 +29,9 @@ import android.widget.EditText;
 public class LoginActivity extends AppCompatActivity {
 
     /**
-     * A dummy authentication store containing known user names and passwords. (For M4)
-     * TODO: remove after connecting to a real authentication system.
+     * A dummy authentication store containing known user names and passwords.
      */
-    private static final String[] DUMMY_CREDENTIALS = new String[]{
-            "user:pass"
-    };
+    private static final HashMap<String, String> DUMMY_CREDENTIALS = Login.DUMMY_CREDENTIALS;
 
     /**
      * Keep track of the login task to ensure we can cancel it if requested.
@@ -91,7 +93,7 @@ public class LoginActivity extends AppCompatActivity {
                 username.setError(getString(R.string.error_field_required));
                 focusView = username;
                 cancel = true;
-            } else if (!isUsernameValid(user)) {
+            } else if (!Login.isUsernameValid(user)) {
                 username.setError(getString(R.string.error_invalid_username));
                 focusView = username;
                 cancel = true;
@@ -102,7 +104,7 @@ public class LoginActivity extends AppCompatActivity {
                 password.setError(getString(R.string.error_field_required));
                 focusView = password;
                 cancel = true;
-            } else if (!isPasswordValid(pass)) {
+            } else if (!Login.isPasswordValid(pass)) {
                 password.setError(getString(R.string.error_invalid_password));
                 focusView = password;
                 cancel = true;
@@ -120,16 +122,6 @@ public class LoginActivity extends AppCompatActivity {
             mAuthTask = new UserLoginTask(user, pass);
             mAuthTask.execute((Void) null);
         }
-    }
-
-    private boolean isUsernameValid(String username) {
-        //TODO: Replace this with your own logic
-        return true;
-    }
-
-    private boolean isPasswordValid(String password) {
-        //TODO: Replace this with your own logic
-        return true;
     }
 
     /**
@@ -157,11 +149,11 @@ public class LoginActivity extends AppCompatActivity {
                 return false;
             }
 
-            for (String credential : DUMMY_CREDENTIALS) {
-                String[] pieces = credential.split(":");
-                if (pieces[0].equals(user)) {
+            for (String credentialUser : DUMMY_CREDENTIALS.keySet()) {
+                String credentialPassword = DUMMY_CREDENTIALS.get(credentialUser);
+                if (credentialUser.equals(user)) {
                     // Account exists, return true if the password matches.
-                    return pieces[1].equals(pass);
+                    return credentialPassword.equals(pass);
                 }
             }
 
