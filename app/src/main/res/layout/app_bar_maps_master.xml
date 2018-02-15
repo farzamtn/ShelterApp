@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.CS2340.shelterapp.MapsMasterActivity">
+    tools:context="com.CS2340.shelterapp.Controller.MapsMasterActivity">
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"

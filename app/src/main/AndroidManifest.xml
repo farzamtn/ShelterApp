@@ -16,7 +16,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".LoginActivity">
+        <activity android:name=".Controller.LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -24,14 +24,14 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".RegistrationActivity"
+            android:name=".Controller.RegistrationActivity"
             android:label="@string/title_activity_registration"
-            android:parentActivityName=".LoginActivity">
+            android:parentActivityName=".Controller.LoginActivity">
 
             <!-- The meta-data element is needed for versions lower than 4.1 -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.CS2340.shelterapp.LoginActivity" />
+                android:value="com.CS2340.shelterapp.Controller.LoginActivity" />
         </activity>
 
         <!--
@@ -48,11 +48,11 @@
         <!-- This API KEY belongs to Farzam Tafreshian - TEAM 29 -->
 
         <activity
-            android:name=".MapsActivity"
+            android:name=".Controller.MapsFragment"
             android:label="@string/title_activity_maps" />
 
         <activity
-            android:name=".MapsMasterActivity"
+            android:name=".Controller.MapsMasterActivity"
             android:label="@string/title_activity_maps_master"
             android:theme="@style/AppTheme.NoActionBar"></activity>
 

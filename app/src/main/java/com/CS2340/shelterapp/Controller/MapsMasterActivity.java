@@ -1,4 +1,4 @@
-package com.CS2340.shelterapp;
+package com.CS2340.shelterapp.Controller;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -15,6 +15,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+
+import com.CS2340.shelterapp.R;
 
 /**
  * Main activity page with a Navigation Drawer for finding shelters and extra features.
