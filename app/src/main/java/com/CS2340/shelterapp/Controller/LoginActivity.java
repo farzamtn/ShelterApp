@@ -230,7 +230,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     /*Register button caller method - new registration activity starts*/
-    public void newRegistration(View view) {
+    public void newRegistrationIntent(View view) {
         Intent myIntent = new Intent(getBaseContext(), RegistrationActivity.class);
         startActivity(myIntent);
     }

@@ -2,6 +2,7 @@ package com.CS2340.shelterapp.Controller;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
@@ -19,15 +20,21 @@ public class RegistrationActivity extends AppCompatActivity {
     private EditText name;
     private EditText username;
     private EditText password;
+    private EditText phoneNumber;
     private Button registerButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_registration);
-        name = findViewById(R.id.name_input);
-        username = findViewById(R.id.username_input);
-        password = findViewById(R.id.password_input);
-        registerButton = findViewById(R.id.newRegister_button);
+        name = findViewById(R.id.new_register_name);
+        username = findViewById(R.id.new_register_email);
+        password = findViewById(R.id.new_register_password);
+        phoneNumber = findViewById(R.id.new_register_phone);
+        registerButton = findViewById(R.id.new_register_button);
+    }
+
+    public void newRegistration(View view) {
+
     }
 }
