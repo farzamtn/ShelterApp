@@ -32,6 +32,7 @@ dependencies {
 
     compile 'com.google.firebase:firebase-core:11.8.0' //For FireBase
     compile 'com.google.firebase:firebase-auth:11.8.0' //For FireBase Authentication
+    compile 'com.google.firebase:firebase-database:11.8.0' //For FireBase DB
 }
 
 apply plugin: 'com.google.gms.google-services' //For FireBase

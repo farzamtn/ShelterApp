@@ -2,15 +2,15 @@
     <string name="app_name">Shelter App</string>
 
     <!-- Strings related to login and registration -->
-    <string name="title_activity_login">Sign in</string>
+    <string name="title_activity_login">Welcome! Login Below</string>
     <string name="title_activity_registration">New User Registration</string>
     <string name="prompt_fullName">Full Name</string>
     <string name="prompt_email">Email</string>
     <string name="prompt_password">Password</string>
     <string name="prompt_phone">Phone Number</string>
-    <string name="action_sign_in">Sign in</string>
+    <string name="action_log_in">Log in</string>
     <string name="action_register">Register</string>
-    <string name="action_sign_in_short">Sign in</string>
+    <string name="action_sign_in_short">Log in</string>
     <string name="error_invalid_email">Invalid Email entered</string>
     <string name="error_invalid_password">Invalid Password entered</string>
     <string name="error_minimum_password">Password has to be at least 6 characters</string>
