@@ -1,8 +1,5 @@
 package com.CS2340.shelterapp.Controller;
 
-
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -52,7 +49,7 @@ public class RegistrationActivity extends AppCompatActivity {
         password = (EditText) findViewById(R.id.new_register_password);
         phoneNumber = (EditText) findViewById(R.id.new_register_phone);
         registerButton = (Button) findViewById(R.id.new_register_button);
-        progressBar = (ProgressBar) findViewById(R.id.progressBar);
+        progressBar = (ProgressBar) findViewById(R.id.registration_progress);
     }
 
     /**
