@@ -5,9 +5,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.view.View;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -15,14 +14,16 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.CS2340.shelterapp.R;
+import com.google.firebase.auth.FirebaseAuth;
 
 /**
  * Main activity page with a Navigation Drawer for finding shelters and extra features.
  *
  * @author Farzam
- * @version 1.0
+ * @version 1.1
  */
 public class MapsMasterActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -102,7 +103,7 @@ public class MapsMasterActivity extends AppCompatActivity
         } else if (id == R.id.nav_send) {
 
         } else if (id ==  R.id.nav_signout) {
-            /* Prompt the user to sign out
+            /*  Prompt the user to sign out
                 If yes, clear cache and go back to the login screen. - Farzam
              */
             AlertDialog.Builder builder = new AlertDialog.Builder(MapsMasterActivity.this);
@@ -110,6 +111,7 @@ public class MapsMasterActivity extends AppCompatActivity
 
             builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) {
+                    FirebaseAuth.getInstance().signOut(); //Ending FireBase session for this user
                     Intent intent = new Intent(getBaseContext(), LoginActivity.class);
                     startActivity(intent);
                     finish();

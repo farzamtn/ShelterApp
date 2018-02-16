@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "783677796922",
+    "firebase_url": "https://sunlit-theory-194820.firebaseio.com",
+    "project_id": "sunlit-theory-194820",
+    "storage_bucket": "sunlit-theory-194820.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:783677796922:android:212b129d2b36451c",
+        "android_client_info": {
+          "package_name": "com.example.shelterapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "783677796922-vae1m1tojisgkcbk3j7l96311kq2q7ns.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.shelterapp",
+            "certificate_hash": "b5e3dc684051f9b52011a7b7763f1c6b1f2488cd"
+          }
+        },
+        {
+          "client_id": "783677796922-46niqmaigv3sih22du69rnclpn6p1tdu.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBcKDTYTQSKNv8daBIB98zoLhYvsH4E5tc"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "783677796922-46niqmaigv3sih22du69rnclpn6p1tdu.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

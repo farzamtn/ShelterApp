@@ -1,6 +1,7 @@
 package com.CS2340.shelterapp.Model;
 
-import java.util.HashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Model class for LoginActivity that handles user/pass validity.
@@ -9,14 +10,6 @@ import java.util.HashMap;
  * @version 1.0
  */
 public class Login {
-
-    /**
-     * A dummy authentication store containing known user names and passwords.
-     * TODO: remove after connecting to a real authentication system.
-     */
-    public static HashMap<String, String> DUMMY_CREDENTIALS = new HashMap<String, String>(){
-        {put("user", "pass");}
-    };
 
     private String username;
     private String password;
@@ -27,14 +20,24 @@ public class Login {
     }
 
 
-    public static boolean isUsernameValid(String username) {
+    public static boolean isUsernameValid(String user) {
         //TODO: Replace this with your own logic
-        return true;
+        return isValidEmail(user);
     }
 
-    public static boolean isPasswordValid(String password) {
+    /**
+     * Check if an email is valid
+     */
+    public static Boolean isValidEmail(String email) {
+        Pattern pattern = Pattern.compile("^.+@.+\\..+$");
+        Matcher matcher = pattern.matcher(email);
+
+        return matcher.find();
+    }
+
+    public static boolean isPasswordValid(String pass) {
         //TODO: Replace this with your own logic
-        return true;
+        return pass.length() >= 6;
     }
 
 }
