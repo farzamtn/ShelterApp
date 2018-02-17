@@ -91,6 +91,40 @@
 
             </android.support.design.widget.TextInputLayout>
 
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="User Type:"
+                android:textColor="@android:color/black"
+                android:textSize="18sp" />
+
+            <RadioGroup xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/userTypesRbutton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="26dp"
+                android:checkedButton="@id/shelterSeekerRbutton">
+
+                <RadioButton
+                    android:id="@+id/adminRbutton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/userType_admin"
+                    android:textColor="@android:color/black" />
+
+                <RadioButton
+                    android:id="@+id/shelterEmployeeRbutton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/userType_shelter_employee" />
+
+                <RadioButton
+                    android:id="@+id/shelterSeekerRbutton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/userType_shelter_seeker" />
+            </RadioGroup>
+
             <Button
                 android:id="@+id/new_register_button"
                 style="?android:textAppearanceSmall"

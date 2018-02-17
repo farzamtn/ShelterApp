@@ -35,6 +35,9 @@ public class Login {
         return matcher.find();
     }
 
+    /**
+     * Check if the password is valid
+     */
     public static boolean isPasswordValid(String pass) {
         //TODO: Replace this with your own logic
         return pass.length() >= 6;

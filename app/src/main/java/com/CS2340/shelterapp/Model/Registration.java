@@ -9,4 +9,17 @@ package com.CS2340.shelterapp.Model;
  */
 public class Registration {
 
+    /**
+     * Check if Name Field is valid
+     */
+    public static boolean isNameValid(String name) {
+        return name.length() >= 4;
+    }
+
+    /**
+     * Check if PhoneNumber Field is valid
+     */
+    public static boolean isPhoneNumberValid(String phoneNumber) {
+        return phoneNumber.length() == 10;
+    }
 }

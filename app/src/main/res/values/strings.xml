@@ -2,7 +2,7 @@
     <string name="app_name">Shelter App</string>
 
     <!-- Strings related to login and registration -->
-    <string name="title_activity_login">Welcome! Login Below</string>
+    <string name="title_activity_login">Shelter App</string>
     <string name="title_activity_registration">New User Registration</string>
     <string name="prompt_fullName">Full Name</string>
     <string name="prompt_email">Email</string>
@@ -11,10 +11,12 @@
     <string name="action_log_in">Log in</string>
     <string name="action_register">Register</string>
     <string name="action_sign_in_short">Log in</string>
+    <string name="error_invalid_name">Invalid Name entered</string>
     <string name="error_invalid_email">Invalid Email entered</string>
     <string name="error_invalid_password">Invalid Password entered</string>
     <string name="error_minimum_password">Password has to be at least 6 characters</string>
     <string name="error_incorrect_password">This password is incorrect</string>
+    <string name="error_invalid_phoneNumber">Invalid Phone Number entered</string>
     <string name="error_field_required">This field is required</string>
     <string name="title_activity_maps">Shelter Map</string>
     <string name="auth_failed">Authentication failed, check your email and password or sign up for a new account</string>
@@ -26,5 +28,13 @@
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="action_settings">Settings</string>
+
+    <!-- User Types -->
+    <string name="userType_shelter_seeker">Shelter Seeker</string>
+    <string name="userType_admin">Admin</string>
+    <string name="userType_shelter_employee">Shelter Employee</string>
+
+
+
 
 </resources>

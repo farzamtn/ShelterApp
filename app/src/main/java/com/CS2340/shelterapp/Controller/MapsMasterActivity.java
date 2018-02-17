@@ -15,9 +15,12 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 
 import com.CS2340.shelterapp.R;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
 
 /**
  * Main activity page with a Navigation Drawer for finding shelters and extra features.
@@ -28,10 +31,16 @@ import com.google.firebase.auth.FirebaseAuth;
 public class MapsMasterActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+    private FirebaseUser currentUser;
+    private DatabaseReference userDB;
+
+    private TextView userLabel;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps_master);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -52,6 +61,33 @@ public class MapsMasterActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        /*
+            The following block of code has been commented by Farzam for speed purposes.
+            However, this is how we would read data from our DB to change the userLabel (for e.g.)
+        */
+
+//        userLabel = (TextView) findViewById(R.id.userLabel);
+//
+//        currentUser = FirebaseAuth.getInstance().getCurrentUser();
+//        String RegisteredUserID = currentUser.getUid();
+//        userDB = FirebaseDatabase.getInstance().getReference().child("Users");
+//        DatabaseReference userDBref = userDB.child(RegisteredUserID);
+//
+//        userDBref.addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot dataSnapshot) {
+//                String name = dataSnapshot.child("Name").getValue(String.class);
+//                userLabel.setText("Hi " + name + "!");
+//            }
+//
+//            @Override
+//            public void onCancelled(DatabaseError databaseError) {
+//                userLabel.setText("github.com/farzamtn/ShelterApp");
+//                System.out.println("The read failed: " + databaseError.getCode());
+//            }
+//        });
+
     }
 
     @Override
