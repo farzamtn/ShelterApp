@@ -52,8 +52,8 @@
         -->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="@string/google_maps_key" />
-        <!-- This API KEY belongs to Farzam Tafreshian - TEAM 29 -->
+            android:value="AIzaSyBDATHq3sSi3RrFj1-J4DZ5fc5EEuBuL5E" />
+        <!-- This API KEY belongs to KEVIN - TEAM 29 -->
 
         <activity
             android:name=".Controller.MapsFragment"
