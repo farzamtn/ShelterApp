@@ -9,9 +9,9 @@
             android:icon="@drawable/ic_menu_camera"
             android:title="Scan" />
         <item
-            android:id="@+id/nav_gallery"
+            android:id="@+id/nav_shelters"
             android:icon="@drawable/ic_menu_gallery"
-            android:title="Shelters" />
+            android:title="Shelter Information" />
     </group>
 
     <item android:title="Communicate">
@@ -36,7 +36,7 @@
             <item
                 android:id="@+id/nav_signout"
                 android:icon="@android:drawable/ic_lock_power_off"
-                android:title="Log Out" />
+                android:title="Log Out"/>
         </menu>
 
     </item>

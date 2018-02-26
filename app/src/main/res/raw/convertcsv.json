@@ -1,0 +1,147 @@
+{
+   "Shelters" : {
+      "0" : {
+         "Unique Key": 0,
+         "Shelter Name": "My Sister's House",
+         "Capacity": "264",
+         "Restrictions": "Women/Children",
+         "Longitude": -84.410142,
+         "Latitude": 33.780174,
+         "Address": "921 Howell Mill Road, Atlanta, Georgia 30318",
+         "Special Notes": "Temporary, Emergency, Residential Recovery",
+         "Phone Number": "(404) 367-2465"
+       },
+      "1" : {
+         "Unique Key": 1,
+         "Shelter Name": "The Atlanta Day Center for Women & Children",
+         "Capacity": "140",
+         "Restrictions": "Women/Children",
+         "Longitude": -84.408771,
+         "Latitude": 33.784889,
+         "Address": "655 Ethel Street, Atlanta, Georgia 30318",
+         "Special Notes": "Career Facilitation",
+         "Phone Number": "(404) 588-4007"
+       },
+       "2" : {
+         "Unique Key": 2,
+         "Shelter Name": "The Shepherd's Inn",
+         "Capacity": "450",
+         "Restrictions": "Men",
+         "Longitude": -84.39265,
+         "Latitude": 33.765162,
+         "Address": "156 Mills Street, Atlanta, Georgia 30313",
+         "Special Notes": "Temporary, Residential Recovery",
+         "Phone Number": "(404) 367-2493"
+       },
+       "3" : {
+         "Unique Key": 3,
+         "Shelter Name": "Fuqua Hall",
+         "Capacity": "92",
+         "Restrictions": "Men",
+         "Longitude": -84.392273,
+         "Latitude": 33.76515,
+         "Address": "144 Mills Street, Atlanta, Georgia 30313",
+         "Special Notes": "Transitional housing",
+         "Phone Number": "(404) 367-2492"
+       },
+       "4" : {
+         "Unique Key": 4,
+         "Shelter Name": "Atlanta's Children Center",
+         "Capacity": "40",
+         "Restrictions": "Families w/ Children under 5",
+         "Longitude": -84.384433,
+         "Latitude": 33.770949,
+         "Address": "607 Peachtree Street NE Atlanta, GA 30308",
+         "Special Notes": "Children's programs, early childhood education",
+         "Phone Number": "(404) 892-3713"
+       },
+       "5" : {
+         "Unique Key": 5,
+         "Shelter Name": "Eden Village ",
+         "Capacity": "32 for families, 80 singles",
+         "Restrictions": "Women/Children",
+         "Longitude": -84.43023,
+         "Latitude": 33.762316,
+         "Address": "1300 Joseph E. Boone Blvd NW, Atlanta, GA 30314",
+         "Special Notes": "General recovery services",
+         "Phone Number": "(404)-874-2241"
+       },
+       "6" : {
+         "Unique Key": 6,
+         "Shelter Name": "Our House ",
+         "Capacity": "76 family rooms ",
+         "Restrictions": "Families w/ newborns ",
+         "Longitude": -84.371706,
+         "Latitude": 33.759138,
+         "Address": "173 Boulevard Northeast, Atlanta, GA 30312",
+         "Special Notes": "Families w/ Newborns, Pre-K education",
+         "Phone Number": "(404) 522-6056"
+       },
+       "7" : {
+         "Unique Key": 7,
+         "Shelter Name": "Covenant House Georgia ",
+         "Capacity": "80",
+         "Restrictions": "Childrens/Young adults ",
+         "Longitude": -84.437988,
+         "Latitude": 33.78823,
+         "Address": "1559 Johnson Road NW, Atlanta, GA 30318",
+         "Special Notes": "Crisis services/Career Preparation",
+         "Phone Number": "(404)-937-6957"
+       },
+       "8" : {
+         "Unique Key": 8,
+         "Shelter Name": "Nicholas House",
+         "Capacity": "",
+         "Restrictions": "Families ",
+         "Longitude": -84.367953,
+         "Latitude": 33.731823,
+         "Address": "830 Boulevard SE, Atlanta, GA 30312",
+         "Special Notes": "Family services ",
+         "Phone Number": "(404)-622-0793"
+       },
+       "9" : {
+         "Unique Key": 9,
+         "Shelter Name": "Hope Atlanta ",
+         "Capacity": "22 apartments",
+         "Restrictions": "Anyone ",
+         "Longitude": -84.390429,
+         "Latitude": 33.753594,
+         "Address": "34 Peachtree Street NW, Suite 700, Atlanta, GA 30303",
+         "Special Notes": "Emergency shelter ",
+         "Phone Number": "(404)-817-7070"
+       },
+       "10" : {
+         "Unique Key": 10,
+         "Shelter Name": "Gateway Center",
+         "Capacity": "330",
+         "Restrictions": "Men",
+         "Longitude": -84.394529,
+         "Latitude": 33.747618,
+         "Address": "275 Pryor St. SW, Atlanta, GA 30303",
+         "Special Notes": "Shelter and recovery services ",
+         "Phone Number": "(404) 215-6600"
+       },
+       "11" : {
+         "Unique Key": 11,
+         "Shelter Name": "Young Adult Guidance Center ",
+         "Capacity": "12",
+         "Restrictions": "Young adults ",
+         "Longitude": -84.470567,
+         "Latitude": 33.789157,
+         "Address": "1230 Hightower Road NW Atlanta, GA 30318",
+         "Special Notes": "Emergency, Independent living, Restoration ",
+         "Phone Number": "(404) 792-7616"
+       },
+       "12" : {
+         "Unique Key": 12,
+         "Shelter Name": "Homes of Light ",
+         "Capacity": "",
+         "Restrictions": "Veterans ",
+         "Longitude": -84.328691,
+         "Latitude": 33.747641,
+         "Address": "1800 Memorial Dr SE G3, Atlanta, GA 30317",
+         "Special Notes": "Veterans ",
+         "Phone Number": "(844) 289-8382"
+       }
+   }
+}

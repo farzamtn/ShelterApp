@@ -34,7 +34,9 @@
     <string name="userType_admin">Admin</string>
     <string name="userType_shelter_employee">Shelter Employee</string>
 
-
+    <!-- Shelter Master/Detail -->
+    <string name="title_shelteritem_list">Shelter List</string>
+    <string name="title_shelteritem_detail">ShelterItem Detail</string>
 
 
 </resources>
