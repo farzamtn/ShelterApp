@@ -143,9 +143,15 @@ public class LoginActivity extends AppCompatActivity {
                                     public void onDataChange(DataSnapshot dataSnapshot) {
                                         String userType = dataSnapshot.child("User Type").getValue(String.class);
                                         if(userType.equals("Admin")){
-                                            //TODO: Start Admin Activity
+                                            Intent intentUser = new Intent(LoginActivity.this, AdminActivity.class);
+                                            intentUser.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                            startActivity(intentUser);
+                                            finish();
                                         } else if (userType.equals("Shelter Employee")) {
-                                            //TODO: Start Shelter Employee Activity
+                                            Intent intentUser = new Intent(LoginActivity.this, MapsMasterActivity.class);
+                                            intentUser.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                            startActivity(intentUser);
+                                            finish();
                                         } else if (userType.equals("Shelter Seeker")) {
                                             Intent intentUser = new Intent(LoginActivity.this, MapsMasterActivity.class);
                                             intentUser.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);

@@ -166,9 +166,10 @@ public class RegistrationActivity extends AppCompatActivity {
 
                                 //Start the correct activity based on usertype
                                 if (userType.equals("Admin")){
-                                    //TODO: Start Admin Activity
+                                    startActivity(new Intent(RegistrationActivity.this, LoginActivity.class));
                                 } else if (userType.equals("Shelter Employee")) {
-                                    //TODO: Start Shelter Employee Activity
+                                    startActivity(new Intent(RegistrationActivity.this, LoginActivity.class));
+                                    finish();
                                 } else if (userType.equals("Shelter Seeker")) {
                                     startActivity(new Intent(RegistrationActivity.this, LoginActivity.class));
                                     finish();
