@@ -9,24 +9,31 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.Toast;
 
 import com.CS2340.shelterapp.Model.Login;
+import com.CS2340.shelterapp.Model.Registration;
 import com.CS2340.shelterapp.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 /**
  * A registration screen that offers Shelter App registration.
  *
  * @author Farzam
- * @version 1.1
+ * @version 1.2
  */
 public class RegistrationActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
+    private DatabaseReference mRegisterDatabase;
+    private DatabaseReference conditionRef;
 
     // UI references.
     private EditText name;
@@ -35,6 +42,7 @@ public class RegistrationActivity extends AppCompatActivity {
     private EditText phoneNumber;
     private Button registerButton;
     private ProgressBar progressBar;
+    private RadioGroup userTypes;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,12 +52,17 @@ public class RegistrationActivity extends AppCompatActivity {
         //Get Firebase auth instance
         mAuth = FirebaseAuth.getInstance();
 
+        //Get Firebase DB instance - The Users Table
+        mRegisterDatabase = FirebaseDatabase.getInstance().getReference().child("Users");
+
+        //Set up the registration form
         name = (EditText) findViewById(R.id.new_register_name);
         email = (EditText) findViewById(R.id.new_register_email);
         password = (EditText) findViewById(R.id.new_register_password);
         phoneNumber = (EditText) findViewById(R.id.new_register_phone);
         registerButton = (Button) findViewById(R.id.new_register_button);
         progressBar = (ProgressBar) findViewById(R.id.registration_progress);
+        userTypes = (RadioGroup) findViewById(R.id.userTypesRbutton);
     }
 
     /**
@@ -63,38 +76,59 @@ public class RegistrationActivity extends AppCompatActivity {
         email.setError(null);
         password.setError(null);
 
-        String user = this.email.getText().toString().trim();
-        String pass = password.getText().toString().trim();
+        final String fullName = name.getText().toString();
+        final String user = email.getText().toString().trim();
+        final String pass = password.getText().toString().trim();
+        final String phoneNum = phoneNumber.getText().toString().trim();
+
+        //Retrieving the selected user type
+        int selectedButtonId = userTypes.getCheckedRadioButtonId();
+        RadioButton selectedUser = (RadioButton) findViewById(selectedButtonId);
+        final String userType = selectedUser.getText().toString();
 
         boolean cancel = false;
         View focusView = null;
 
-        //If both inputs are empty, display message and put focus on email
-        if (TextUtils.isEmpty(user) && TextUtils.isEmpty(pass)) {
-            email.setError(getString(R.string.error_field_required));
+        //In Reverse order of the UI to display error for the first EditText first
+
+        if (TextUtils.isEmpty(phoneNum)) {
+            phoneNumber.setError(getString(R.string.error_field_required));
+            focusView = phoneNumber;
+            cancel = true;
+        } else if (!Registration.isPhoneNumberValid(phoneNum)) {
+            phoneNumber.setError(getString(R.string.error_invalid_phoneNumber));
+            focusView = phoneNumber;
+            cancel = true;
+        }
+
+        if (TextUtils.isEmpty(pass)) {
             password.setError(getString(R.string.error_field_required));
+            focusView = password;
+            cancel = true;
+        } else if (!Login.isPasswordValid(pass)) {
+            password.setError(getString(R.string.error_minimum_password));
+            focusView = password;
+            cancel = true;
+        }
+
+        if (TextUtils.isEmpty(user)) {
+            this.email.setError(getString(R.string.error_field_required));
             focusView = email;
             cancel = true;
-        } else {
-            if (TextUtils.isEmpty(user)) {
-                this.email.setError(getString(R.string.error_field_required));
-                focusView = email;
-                cancel = true;
-            } else if (!Login.isUsernameValid(user)) {
-                email.setError(getString(R.string.error_invalid_email));
-                focusView = email;
-                cancel = true;
-            }
+        } else if (!Login.isUsernameValid(user)) {
+            email.setError(getString(R.string.error_invalid_email));
+            focusView = email;
+            cancel = true;
+        }
 
-            if (TextUtils.isEmpty(pass)) {
-                password.setError(getString(R.string.error_field_required));
-                focusView = password;
-                cancel = true;
-            } else if (!Login.isPasswordValid(pass)) {
-                password.setError(getString(R.string.error_minimum_password));
-                focusView = password;
-                cancel = true;
-            }
+        if (TextUtils.isEmpty(fullName)) {
+            name.setError(getString(R.string.error_field_required));
+            focusView = name;
+            cancel = true;
+        } else if (!Registration.isNameValid(fullName)) {
+            name.setError(getString(R.string.error_invalid_name));
+            focusView = password;
+            cancel = true;
         }
 
         if (cancel) {
@@ -118,10 +152,28 @@ public class RegistrationActivity extends AppCompatActivity {
                                 Toast.makeText(RegistrationActivity.this, "Authentication failed." + task.getException(),
                                         Toast.LENGTH_LONG).show();
                             } else {
+
+                                //Adding new user information to DB with Uid being their Unique Key
+                                String user_id = mAuth.getCurrentUser().getUid();
+                                DatabaseReference current_user_db = mRegisterDatabase.child(user_id);
+                                current_user_db.child("Name").setValue(fullName);
+                                current_user_db.child("Email").setValue(user);
+                                current_user_db.child("Phone Number").setValue(phoneNum);
+                                current_user_db.child("User Type").setValue(userType);
+
                                 Toast.makeText(RegistrationActivity.this, "Your new account has been created. Welcome!",
                                         Toast.LENGTH_LONG).show();
-                                startActivity(new Intent(RegistrationActivity.this, LoginActivity.class));
-                                finish();
+
+                                //Start the correct activity based on usertype
+                                if (userType.equals("Admin")){
+                                    startActivity(new Intent(RegistrationActivity.this, AdminActivity.class));
+                                } else if (userType.equals("Shelter Employee")) {
+                                    startActivity(new Intent(RegistrationActivity.this, LoginActivity.class));
+                                    finish();
+                                } else if (userType.equals("Shelter Seeker")) {
+                                    startActivity(new Intent(RegistrationActivity.this, LoginActivity.class));
+                                    finish();
+                                }
                             }
                         }
                     });

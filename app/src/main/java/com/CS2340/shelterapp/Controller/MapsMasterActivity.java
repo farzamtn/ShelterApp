@@ -12,27 +12,36 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import com.CS2340.shelterapp.Model.Shelters;
 import com.CS2340.shelterapp.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 /**
  * Main activity page with a Navigation Drawer for finding shelters and extra features.
  *
  * @author Farzam
- * @version 1.1
+ * @version 1.2
  */
 public class MapsMasterActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     private FirebaseUser currentUser;
     private DatabaseReference userDB;
+    private DatabaseReference shelterDB;
+
+    private Shelters model;
 
     private TextView userLabel;
 
@@ -62,9 +71,19 @@ public class MapsMasterActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        //Getting the Shelters Table from DB and creating a new Model Instance for Shelters
+        shelterDB = FirebaseDatabase.getInstance().getReference().child("Shelters");
+        model = Shelters.INSTANCE;
+
+        //TODO: Farzam: Check if the number of children in Shelters DB changes and clear model list and add shelters to model again
+        //Tried getting ChildrenCount from dataSnapShot and comparing it with getItems().size() but it returns 0 everytime
+        if (model.getItems().size() == 0) {
+            populateShelterInfo();
+        }
+
         /*
-            The following block of code has been commented by Farzam for speed purposes.
-            However, this is how we would read data from our DB to change the userLabel (for e.g.)
+            The following block of code has been commented by Farzam (crashes)
+            However, this is how we would read data from our DB to change the userLabel.
         */
 
 //        userLabel = (TextView) findViewById(R.id.userLabel);
@@ -73,18 +92,18 @@ public class MapsMasterActivity extends AppCompatActivity
 //        String RegisteredUserID = currentUser.getUid();
 //        userDB = FirebaseDatabase.getInstance().getReference().child("Users");
 //        DatabaseReference userDBref = userDB.child(RegisteredUserID);
-//
+
 //        userDBref.addValueEventListener(new ValueEventListener() {
 //            @Override
 //            public void onDataChange(DataSnapshot dataSnapshot) {
 //                String name = dataSnapshot.child("Name").getValue(String.class);
-//                userLabel.setText("Hi " + name + "!");
+//                userLabel.setText(String.format("Hi %s", name));
 //            }
 //
 //            @Override
 //            public void onCancelled(DatabaseError databaseError) {
 //                userLabel.setText("github.com/farzamtn/ShelterApp");
-//                System.out.println("The read failed: " + databaseError.getCode());
+//                System.out.println("The read failed: " + databaseError.getMessage());
 //            }
 //        });
 
@@ -130,8 +149,9 @@ public class MapsMasterActivity extends AppCompatActivity
 
         if (id == R.id.nav_camera) {
             // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
-
+        } else if (id == R.id.nav_shelters) {
+            Intent intent = new Intent(this, ShelterItemListActivity.class);
+            startActivity(intent);
         } else if (id == R.id.nav_manage) {
 
         } else if (id == R.id.nav_share) {
@@ -165,5 +185,73 @@ public class MapsMasterActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    /**
+     * Method for getting all the shelter info from the FireBase DB and adding it to the local model.
+     * Remember both the .csv file (for local bufferReading) and .json file (For FireBase DB) has been
+     * added to the res/raw just in case. - Farzam
+     */
+    private void populateShelterInfo() {
+        shelterDB.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot shelters : dataSnapshot.getChildren()) {
+                   model.addItem(new ShelterData(shelters.child("Unique Key").getValue(Integer.class),
+                           shelters.child("Shelter Name").getValue(String.class),
+                           shelters.child("Capacity").getValue(String.class),
+                           shelters.child("Restrictions").getValue(String.class),
+                           shelters.child("Longitude").getValue(Double.class),
+                           shelters.child("Latitude").getValue(Double.class),
+                           shelters.child("Address").getValue(String.class),
+                           shelters.child("Special Notes").getValue(String.class),
+                           shelters.child("Phone Number").getValue(String.class)));
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.d("Shelter DB Error", databaseError.getMessage());
+            }
+        });
+
+        /**
+         * The following code is for populating shelter information by
+         * reading the .csv file instead of getting data for DB (in case DB/App crashes) - Farzam
+         * TODO: Farzam: Remove following after demo and validation
+         */
+
+//        public static final int KEY_POSITION = 0;
+//        public static final int NAME_POSITION = 1;
+//        public static final int CAPACITY_POSITION = 2;
+//        public static final int RESTRICTION_POSITION = 3;
+//        public static final int LONGITUDE_POSITION = 4;
+//        public static final int LATITUDE_POSITION = 5;
+//        public static final int ADDRESS_POSITION = 6;
+//        public static final int NOTES_POSITION = 7;
+//        public static final int PHONENUMBER_POSITION = 8;
+
+//        try {
+//            //Open a stream on the raw file
+//            InputStream is = getResources().openRawResource(R.raw.shelterdatabase);
+//            //From here we probably should call a model method and pass the InputStream
+//            //Wrap it in a BufferedReader so that we get the readLine() method
+//            BufferedReader br = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
+//
+//            String line;
+//            br.readLine(); //get rid of header line
+//            while ((line = br.readLine()) != null) {
+//                String[] tokens = line.split(",");
+//                int key = Integer.parseInt(tokens[KEY_POSITION]);
+//                Double longitude = Double.parseDouble(tokens[LONGITUDE_POSITION]);
+//                Double latitude = Double.parseDouble(tokens[LATITUDE_POSITION]);
+//                model.addItem(new ShelterData(key, tokens[NAME_POSITION], tokens[CAPACITY_POSITION],
+//                        tokens[RESTRICTION_POSITION], longitude, latitude, tokens[ADDRESS_POSITION],
+//                        tokens[NOTES_POSITION], tokens[PHONENUMBER_POSITION]));
+//            }
+//            br.close();
+//        } catch (IOException e) {
+//            Log.d("Error in file read", e.getMessage());
+//        }
     }
 }
