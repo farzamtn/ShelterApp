@@ -14,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.SearchView;
 import android.widget.TextView;
 
 import com.CS2340.shelterapp.Model.Shelters;
@@ -70,6 +71,32 @@ public class ShelterItemListActivity extends AppCompatActivity {
         assert recyclerView != null;
         setupRecyclerView((RecyclerView) recyclerView);
 
+        SearchView searchBar = (SearchView) findViewById(R.id.search_bar);
+        searchBar.setQueryHint("Search Shelters");
+        searchBar.setSubmitButtonEnabled(true);
+
+        searchBar.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                if (query == null || query.equals("")) {
+                    setupRecyclerView((RecyclerView) recyclerView);
+                }
+                setupRecyclerView((RecyclerView) recyclerView, searchBar.getQuery());
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String query) {
+                if (query == null || query.equals("")) {
+                    setupRecyclerView((RecyclerView) recyclerView);
+                }
+                setupRecyclerView((RecyclerView) recyclerView, searchBar.getQuery());
+                return true;
+            }
+        });
+
+
+
         if (findViewById(R.id.shelteritem_detail_container) != null) {
             // The detail container view will be present only in the
             // large-screen layouts (res/values-w900dp).
@@ -98,6 +125,10 @@ public class ShelterItemListActivity extends AppCompatActivity {
 
     private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
         recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(Shelters.INSTANCE.getItems()));
+    }
+
+    private void setupRecyclerView(@NonNull RecyclerView recyclerView, CharSequence query) {
+        recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(Shelters.INSTANCE.findItemsByQuery(query)));
     }
 
     public class SimpleItemRecyclerViewAdapter
