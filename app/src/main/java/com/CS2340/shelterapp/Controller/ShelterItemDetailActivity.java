@@ -181,7 +181,7 @@ public class ShelterItemDetailActivity extends AppCompatActivity {
         userRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                userRef.child("Beds").setValue("" + newBeds);
+                userRef.child("Beds").setValue(newBeds);
             }
             @Override
             public void onCancelled(DatabaseError databaseError) {
@@ -312,7 +312,7 @@ public class ShelterItemDetailActivity extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 checkedIn = dataSnapshot.child("Checked In").getValue(Integer.class);
-                beds = Integer.parseInt(dataSnapshot.child("Beds").getValue(String.class));
+                beds = dataSnapshot.child("Beds").getValue(Integer.class);
             }
 
             @Override
@@ -326,8 +326,8 @@ public class ShelterItemDetailActivity extends AppCompatActivity {
         shelterDBref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                capacity = dataSnapshot.child("Capacity").getValue().toString();
-                shelterKey = Integer.parseInt(dataSnapshot.child("Unique Key").getValue().toString());
+                capacity = dataSnapshot.child("Capacity").getValue(String.class);
+                shelterKey = dataSnapshot.child("Unique Key").getValue(Integer.class);
                 updateFabImage();
             }
 
