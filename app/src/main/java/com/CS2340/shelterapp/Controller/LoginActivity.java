@@ -155,7 +155,7 @@ public class LoginActivity extends AppCompatActivity {
                                             startActivity(intentUser);
                                             finish();
                                         } else if (userType.equals("Shelter Seeker")) {
-                                            Intent intentUser = new Intent(LoginActivity.this, MapsMasterActivity.class);
+                                            Intent intentUser = new Intent(LoginActivity.this, MapsFragment.class);
                                             intentUser.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                             startActivity(intentUser);
                                             finish();
