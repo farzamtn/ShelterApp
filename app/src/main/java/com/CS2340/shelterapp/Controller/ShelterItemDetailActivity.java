@@ -17,6 +17,8 @@ import android.widget.Toast;
 
 import com.CS2340.shelterapp.Model.Shelters;
 import com.CS2340.shelterapp.R;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -38,12 +40,21 @@ public class ShelterItemDetailActivity extends AppCompatActivity {
 
     private DatabaseReference mShelterDatabase;
     private DatabaseReference conditionRef;
+    private DatabaseReference userRef;
+    private FirebaseUser currentUser;
+    private DatabaseReference userDB;
+    private DatabaseReference userDBref;
+    private DatabaseReference shelterDBref;
     private int shelterId;
     private String capChange;
     private String capacity;
     private String newCap;
     private int maxCap;
-    ShelterData mItem;
+    private ShelterData mItem;
+    private int checkedIn;
+    private int beds;
+    private int shelterKey;
+    private FloatingActionButton fab;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,22 +64,39 @@ public class ShelterItemDetailActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         mShelterDatabase = FirebaseDatabase.getInstance().getReference().child("Shelters");
         maxCap = 10; //default maxCap
+        capChange = "0"; //change is 0 by default
+
+        currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        String RegisteredUserID = currentUser.getUid();
+        userDB = FirebaseDatabase.getInstance().getReference().child("Users");
+        userDBref = userDB.child(RegisteredUserID);
 
         Intent intent = getIntent();
         shelterId = intent.getIntExtra(ShelterItemDetailFragment.ARG_ITEM_ID, -1);
         mItem = Shelters.INSTANCE.findItemById(shelterId);
+        shelterDBref = mShelterDatabase.child(Integer.toString(shelterId));
+
+        getUserInfo();
+        getShelterInfo();
 
 
 
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.checkIn);
+        fab = (FloatingActionButton) findViewById(R.id.checkIn);
+
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                displayInputBox();
-                if (!capChange.equals("0")) {
-                    updateScreen();
+
+                if (checkedIn == -1) {
+                    displayInputBox();
+                } else if (checkedIn == mItem.getKey()) {
+                    displayConfirm();
+                } else {
+                    displayCheckInError();
                 }
+                getUserInfo();
+                getShelterInfo();
             }
         });
 
@@ -120,14 +148,44 @@ public class ShelterItemDetailActivity extends AppCompatActivity {
     private void updateDBCap(String newCapacity) {
         conditionRef = mShelterDatabase.child(Integer.toString(shelterId));
 
-        conditionRef.addValueEventListener(new ValueEventListener() {
+        conditionRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 conditionRef.child("Capacity").setValue(newCapacity);
             }
             @Override
             public void onCancelled(DatabaseError databaseError) {
+                System.out.print(databaseError.getMessage());
+            }
+        });
+    }
 
+    private void updateDBUserCheckedIn(int newCheckedIn) {
+        userRef = userDB.child(currentUser.getUid());
+
+        userRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                userRef.child("Checked In").setValue(newCheckedIn);
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                System.out.print(databaseError.getMessage());
+            }
+        });
+    }
+
+    private void updateDBUserBeds(int newBeds) {
+        userRef = userDB.child(currentUser.getUid());
+
+        userRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                userRef.child("Beds").setValue("" + newBeds);
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                System.out.print(databaseError.getMessage());
             }
         });
     }
@@ -154,8 +212,41 @@ public class ShelterItemDetailActivity extends AppCompatActivity {
                     displayOverAlert();
                     capChange = "0";
                 } else {
-                    newCap = String.valueOf(Integer.parseInt(mItem.getCapacity()) - Integer.parseInt(capChange));
+                    newCap = String.valueOf(Integer.parseInt(capacity) - Integer.parseInt(capChange));
+
+                    if (!capChange.equals("0")) {
+                        updateScreen();
+                        checkInUser();
+                        updateDBCap(newCap);
+                        fab.setImageResource(android.R.drawable.checkbox_on_background);
+                    }
+                }
+            }
+        });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+        builder.show();
+    }
+
+    private void displayConfirm() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(ShelterItemDetailActivity.this);
+        builder.setTitle("Release Beds");
+        builder.setMessage("Confirm releasing " + beds + " bed(s).");
+
+        // Set up the buttons
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                capChange = Integer.toString(beds);
+                newCap = String.valueOf(Integer.parseInt(capacity) + Integer.parseInt(capChange));
+                if (!capChange.equals("0")) {
+                    checkOutUser();
                     updateDBCap(newCap);
+                    fab.setImageResource(android.R.drawable.checkbox_off_background);
                 }
             }
         });
@@ -184,7 +275,74 @@ public class ShelterItemDetailActivity extends AppCompatActivity {
         builder.show();
     }
 
+    private void displayCheckInError() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(ShelterItemDetailActivity.this);
+        builder.setTitle("User Already Checked-In");
+        builder.setMessage("The current user is already checked-in to another Shelter");
+
+        // Set up the buttons
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+            }
+        });
+
+        builder.show();
+    }
+
+    private void checkInUser() {
+        updateDBUserBeds(Integer.parseInt(capChange));
+        updateDBUserCheckedIn(mItem.getKey());
+    }
+
+    private void checkOutUser() {
+        updateDBUserBeds(0);
+        beds = 0;
+        updateDBUserCheckedIn(-1);
+        checkedIn = -1;
+    }
+
     private void updateScreen() {
 
+    }
+
+    private void getUserInfo() {
+        userDBref.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                checkedIn = dataSnapshot.child("Checked In").getValue(Integer.class);
+                beds = Integer.parseInt(dataSnapshot.child("Beds").getValue(String.class));
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private void getShelterInfo() {
+        shelterDBref.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                capacity = dataSnapshot.child("Capacity").getValue().toString();
+                shelterKey = Integer.parseInt(dataSnapshot.child("Unique Key").getValue().toString());
+                updateFabImage();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private void updateFabImage() {
+        if (checkedIn == -1) {
+            fab.setImageResource(android.R.drawable.checkbox_off_background);
+        } else if (checkedIn == shelterKey){
+            fab.setImageResource(android.R.drawable.checkbox_on_background);
+        }
     }
 }
