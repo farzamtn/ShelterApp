@@ -4,9 +4,9 @@
 
     <!-- For network calls -->
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
 
     <!--
          The ACCESS_COARSE/FINE_LOCATION permissions are not required to use
@@ -14,6 +14,9 @@
          location permissions for the 'MyLocation' functionality. 
     -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
+    <!-- For turning on location -->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
     <application
         android:allowBackup="true"
@@ -25,7 +28,6 @@
         <activity
             android:name=".Controller.LoginActivity"
             android:label="@string/title_activity_login">
-
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -53,18 +55,36 @@
         -->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="@string/google_maps_key" />
-        <!-- This API KEY belongs to Farzam Tafreshian - TEAM 29 -->
-
-        <activity
-            android:name=".Controller.MapsFragment"
-            android:label="@string/title_activity_maps" />
+            android:value="@string/google_map_key" />
+        <!-- This API KEY belongs to KEVIN - TEAM 29 -->
 
         <activity
             android:name=".Controller.MapsMasterActivity"
             android:label="@string/title_activity_maps_master"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
-
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".Controller.AdminActivity"
+            android:label="@string/title_activity_admin"
+            android:theme="@style/AppTheme.NoActionBar">
+        </activity>
+        <activity
+            android:name=".Controller.ShelterItemListActivity"
+            android:label="@string/title_shelteritem_list"
+            android:parentActivityName=".Controller.MapsMasterActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.CS2340.shelterapp.Controller.MapsMasterActivity" />
+        </activity>
+        <activity
+            android:name=".Controller.ShelterItemDetailActivity"
+            android:label="@string/title_shelteritem_detail"
+            android:parentActivityName=".Controller.ShelterItemListActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.CS2340.shelterapp.Controller.ShelterItemListActivity" />
+        </activity>
     </application>
 
 </manifest>
