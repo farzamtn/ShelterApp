@@ -169,9 +169,7 @@ public class MapsMasterActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.nav_shelters) {
+        if (id == R.id.nav_shelters) {
             Intent intent = new Intent(this, ShelterItemListActivity.class);
             startActivity(intent);
         } else if (id == R.id.nav_manage) {
