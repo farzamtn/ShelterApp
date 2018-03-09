@@ -215,10 +215,11 @@ public class MapsMasterActivity extends AppCompatActivity
             double shelterLatitude = s.getLatitude();
             double shelterLongitude = s.getLongitude();
             String shelterAddress = s.getAddress();
+            String shelterPhoneNumber = s.getPhoneNumber();
 
             LatLng shelterLocation = new LatLng(shelterLatitude, shelterLongitude);
 
-            mMap.addMarker(new MarkerOptions().position(shelterLocation).title(shelterName).snippet(shelterAddress));
+            mMap.addMarker(new MarkerOptions().position(shelterLocation).title(shelterName).snippet(shelterPhoneNumber));
         }
 
         // Prompt the user for permission.
