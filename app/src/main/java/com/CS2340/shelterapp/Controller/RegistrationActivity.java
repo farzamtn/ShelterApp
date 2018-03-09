@@ -160,6 +160,8 @@ public class RegistrationActivity extends AppCompatActivity {
                                 current_user_db.child("Email").setValue(user);
                                 current_user_db.child("Phone Number").setValue(phoneNum);
                                 current_user_db.child("User Type").setValue(userType);
+                                current_user_db.child("Checked In").setValue(-1);
+                                current_user_db.child("Beds").setValue(0);
 
                                 Toast.makeText(RegistrationActivity.this, "Your new account has been created. Welcome!",
                                         Toast.LENGTH_LONG).show();
