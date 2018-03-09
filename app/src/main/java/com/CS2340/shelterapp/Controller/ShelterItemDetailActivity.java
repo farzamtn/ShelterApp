@@ -89,9 +89,17 @@ public class ShelterItemDetailActivity extends AppCompatActivity {
             public void onClick(View view) {
 
                 if (checkedIn == -1) {
-                    displayInputBox();
+                    if (capacity.contains("famil") || capacity.contains("apartment")) {
+                        groupDisplayInputBox();
+                    } else {
+                        displayInputBox();
+                    }
                 } else if (checkedIn == mItem.getKey()) {
-                    displayConfirm();
+                    if (capacity.contains("famil") || capacity.contains("apartment")) {
+                        groupDisplayConfirm();
+                    } else {
+                        displayConfirm();
+                    }
                 } else {
                     displayCheckInError();
                 }
@@ -206,10 +214,12 @@ public class ShelterItemDetailActivity extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 capChange = input.getText().toString();
-                if (Integer.parseInt(mItem.getCapacity()) < Integer.parseInt(capChange)
-                        || maxCap < Integer.parseInt(capChange)) {
+                if (Integer.parseInt(mItem.getCapacity()) < Integer.parseInt(capChange)) {
                     input.setError("Not enough beds");
                     displayOverAlert();
+                    capChange = "0";
+                } else if (maxCap < Integer.parseInt(capChange)) {
+                    displayMaxAlert();
                     capChange = "0";
                 } else {
                     newCap = String.valueOf(Integer.parseInt(capacity) - Integer.parseInt(capChange));
@@ -224,6 +234,86 @@ public class ShelterItemDetailActivity extends AppCompatActivity {
             }
         });
         builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+        builder.show();
+    }
+
+    private void groupDisplayInputBox() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(ShelterItemDetailActivity.this);
+        if (capacity.contains("single")) {
+            builder.setTitle("Single or Group");
+            builder.setMessage("Choose whether you are a single or a group");
+        } else {
+            builder.setTitle("Confirm Group Check-in");
+            builder.setMessage("Confirm a check-in for one group or family");
+        }
+
+
+        // Set up the buttons
+        builder.setPositiveButton("Family or Group", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                int index;
+                if (capacity.contains("apartment")) {
+                    index = capacity.indexOf('a');
+                }
+                else {
+                    index = capacity.indexOf('f');
+                }
+                int oldCap = Integer.parseInt(capacity.substring(0, index - 1));
+                if (oldCap == 0) {
+                    capChange = "0";
+                    displayOverAlert();
+                } else {
+                    capChange = "1";
+                }
+                int newCap = oldCap - 1;
+                String updatedCap = "" + newCap + " " + capacity.substring(index);
+
+
+                if (!capChange.equals("0")) {
+                    updateScreen();
+                    checkInUser();
+                    updateDBCap(updatedCap);
+                    fab.setImageResource(android.R.drawable.checkbox_on_background);
+                }
+
+            }
+        });
+
+        if (capacity.contains("single")) {
+            builder.setNegativeButton("Single", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    int index;
+                    int comma = capacity.indexOf(",");
+                    index = capacity.indexOf("single", comma);
+
+                    int oldCap = Integer.parseInt(capacity.substring(comma + 2, index - 1));
+                    if (oldCap == 0) {
+                        capChange = "0";
+                        displayOverAlert();
+                    } else {
+                        capChange = "2";
+                    }
+                    int newCap = oldCap - 1;
+                    String updatedCap = capacity.substring(0, comma + 2)
+                            + newCap + " " + capacity.substring(index);
+                    if (!capChange.equals("0")) {
+                        updateScreen();
+                        checkInUser();
+                        updateDBCap(updatedCap);
+                        fab.setImageResource(android.R.drawable.checkbox_on_background);
+                    }
+
+                }
+            });
+        }
+        builder.setNeutralButton("Cancel", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.cancel();
@@ -259,10 +349,87 @@ public class ShelterItemDetailActivity extends AppCompatActivity {
         builder.show();
     }
 
+    private void groupDisplayConfirm() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(ShelterItemDetailActivity.this);
+        builder.setTitle("Release Beds");
+
+        if (beds == 1) {
+            builder.setMessage("Confirm release of 1 family/group.");
+        } else if (beds == 2) {
+            builder.setMessage("Confirm release of 1 single.");
+        } else {
+            builder.setMessage("Confirm release of 1 family/group or 1 single.");
+        }
+
+        // Set up the buttons
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if (beds == 1) {
+                    int index;
+                    if (capacity.contains("apartment")) {
+                        index = capacity.indexOf('a');
+                    }
+                    else {
+                        index = capacity.indexOf('f');
+                    }
+                    int oldCap = Integer.parseInt(capacity.substring(0, index - 1));
+                    int newCap = oldCap + 1;
+                    capChange = "1";
+                    String updatedCap = "" + newCap + " " + capacity.substring(index);
+
+                    if (!capChange.equals("0")) {
+                        checkOutUser();
+                        updateDBCap(updatedCap);
+                        fab.setImageResource(android.R.drawable.checkbox_off_background);
+                    }
+                } else {
+                    int index;
+                    int comma = capacity.indexOf(",");
+                    index = capacity.indexOf("single", comma);
+
+                    int oldCap = Integer.parseInt(capacity.substring(comma + 2, index - 1));
+                    int newCap = oldCap + 1;
+                    String updatedCap = capacity.substring(0, comma + 2)
+                            + newCap + " " + capacity.substring(index);
+                    capChange = "2";
+                    if (!capChange.equals("0")) {
+                        checkOutUser();
+                        updateDBCap(updatedCap);
+                        fab.setImageResource(android.R.drawable.checkbox_off_background);
+                    }
+                }
+            }
+        });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+        builder.show();
+
+    }
+
+    private void displayMaxAlert() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(ShelterItemDetailActivity.this);
+        builder.setTitle("Too many Beds");
+        builder.setMessage("Amount of beds is over the max allowed.");
+
+        // Set up the buttons
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+            }
+        });
+
+        builder.show();
+    }
     private void displayOverAlert() {
         AlertDialog.Builder builder = new AlertDialog.Builder(ShelterItemDetailActivity.this);
-        builder.setTitle("Too many beds");
-        builder.setMessage("Amount of beds is either above the max or above the remaining capacity");
+        builder.setTitle("Not enough beds");
+        builder.setMessage("Shelter does not have enough beds.");
 
         // Set up the buttons
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
@@ -276,9 +443,11 @@ public class ShelterItemDetailActivity extends AppCompatActivity {
     }
 
     private void displayCheckInError() {
+        ShelterData mItem = Shelters.INSTANCE.findItemById(checkedIn);
         AlertDialog.Builder builder = new AlertDialog.Builder(ShelterItemDetailActivity.this);
         builder.setTitle("User Already Checked-In");
-        builder.setMessage("The current user is already checked-in to another Shelter");
+        builder.setMessage("The current user is already checked-in to another Shelter.\n"
+                + "User checked in at " + mItem.getName());
 
         // Set up the buttons
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
