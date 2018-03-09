@@ -59,9 +59,6 @@
         <!-- This API KEY belongs to KEVIN - TEAM 29 -->
 
         <activity
-            android:name=".Controller.MapsFragment"
-            android:label="@string/title_activity_maps" />
-        <activity
             android:name=".Controller.MapsMasterActivity"
             android:label="@string/title_activity_maps_master"
             android:theme="@style/AppTheme.NoActionBar" />

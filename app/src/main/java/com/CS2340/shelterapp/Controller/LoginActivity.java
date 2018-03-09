@@ -12,6 +12,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.CS2340.shelterapp.Model.Login;
+import com.CS2340.shelterapp.Model.Shelters;
 import com.CS2340.shelterapp.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -28,13 +29,17 @@ import com.google.firebase.database.ValueEventListener;
  * A login screen that offers login via email/password.
  *
  * @author Farzam
- * @version 1.2
+ * @version 1.4
  */
 public class LoginActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
     private DatabaseReference mLoginDatabase;
     private DatabaseReference conditionRef;
+
+    private DatabaseReference shelterDB;
+
+    private Shelters model;
 
     // UI references.
     private EditText email;
@@ -55,8 +60,19 @@ public class LoginActivity extends AppCompatActivity {
         //Get Firebase DB instance
         mLoginDatabase = FirebaseDatabase.getInstance().getReference();
 
+        //Getting the Shelters Table from DB and creating a new Model Instance for Shelters
+        shelterDB = FirebaseDatabase.getInstance().getReference().child("Shelters");
+        model = Shelters.INSTANCE;
+
         //Check if user is already signed on (persistence)
         if (mAuth.getCurrentUser() != null) {
+            //Populating shelter model class after successful login attempt
+            //TODO: Farzam: Check if the number of children in Shelters DB changes and clear model list and add shelters to model again
+            //following TODO: Tried getting ChildrenCount from dataSnapShot and comparing it with getItems().size() but it returns 0 everytime
+            if (model.getItems().size() == 0) {
+                populateShelterInfo();
+            }
+
             startActivity(new Intent(getBaseContext(), MapsMasterActivity.class));
             finish();
         }
@@ -135,6 +151,13 @@ public class LoginActivity extends AppCompatActivity {
                                 // there was an error
                                 Toast.makeText(LoginActivity.this, getString(R.string.auth_failed), Toast.LENGTH_LONG).show();
                             } else {
+                                //Populating shelter model class after successful login attempt
+                                //TODO: Farzam: Check if the number of children in Shelters DB changes and clear model list and add shelters to model again
+                                //following TODO: Tried getting ChildrenCount from dataSnapShot and comparing it with getItems().size() but it returns 0 everytime
+                                if (model.getItems().size() == 0) {
+                                    populateShelterInfo();
+                                }
+
                                 //Getting the correct type of user based on their login info
                                 FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
                                 String RegisteredUserID = currentUser.getUid();
@@ -155,7 +178,7 @@ public class LoginActivity extends AppCompatActivity {
                                             startActivity(intentUser);
                                             finish();
                                         } else if (userType.equals("Shelter Seeker")) {
-                                            Intent intentUser = new Intent(LoginActivity.this, MapsFragment.class);
+                                            Intent intentUser = new Intent(LoginActivity.this, MapsMasterActivity.class);
                                             intentUser.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                             startActivity(intentUser);
                                             finish();
@@ -166,7 +189,7 @@ public class LoginActivity extends AppCompatActivity {
 
                                     @Override
                                     public void onCancelled(DatabaseError databaseError) {
-
+                                        Log.d("User DB Error (login)", databaseError.getMessage());
                                     }
                                 });
                             }
@@ -182,6 +205,35 @@ public class LoginActivity extends AppCompatActivity {
      */
     public void newRegistrationIntent(View view) {
         startActivity(new Intent(LoginActivity.this, RegistrationActivity.class));
+    }
+
+    /**
+     * Method for getting all the shelter info from the FireBase DB and adding it to the local model.
+     * Remember both the .csv file (for local bufferReading) and .json file (For FireBase DB) has been
+     * added to the res/raw just in case. - Farzam
+     */
+    private void populateShelterInfo() {
+        shelterDB.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot shelters : dataSnapshot.getChildren()) {
+                    model.addItem(new ShelterData(shelters.child("Unique Key").getValue(Integer.class),
+                            shelters.child("Shelter Name").getValue(String.class),
+                            shelters.child("Capacity").getValue(String.class),
+                            shelters.child("Restrictions").getValue(String.class),
+                            shelters.child("Longitude").getValue(Double.class),
+                            shelters.child("Latitude").getValue(Double.class),
+                            shelters.child("Address").getValue(String.class),
+                            shelters.child("Special Notes").getValue(String.class),
+                            shelters.child("Phone Number").getValue(String.class)));
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.d("Shelter DB Error", databaseError.getMessage());
+            }
+        });
     }
 }
 

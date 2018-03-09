@@ -1,12 +1,16 @@
 package com.CS2340.shelterapp.Controller;
 
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Location;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -15,52 +19,83 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.TextView;
 
 import com.CS2340.shelterapp.Model.Shelters;
 import com.CS2340.shelterapp.R;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
 /**
- * Main activity page with a Navigation Drawer for finding shelters and extra features.
+ * Main activity page with the main GoogleMap
+ * and a Navigation Drawer for finding shelters and extra features.
  *
  * @author Farzam
- * @version 1.2
+ * @version 2.0
  */
 public class MapsMasterActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback {
 
-    private FirebaseUser currentUser;
-    private DatabaseReference userDB;
-    private DatabaseReference shelterDB;
-
+    private static final String TAG = MapsMasterActivity.class.getSimpleName();
     private Shelters model;
 
-    private TextView userLabel;
+    private GoogleMap mMap;
+    private CameraPosition mCameraPosition;
+
+    // The entry point to the Fused Location Provider.
+    private FusedLocationProviderClient mFusedLocationProviderClient;
+
+    // A default location (GT Atlanta, GA) and default zoom to use when location permission is
+    // not granted.
+    private final LatLng mDefaultLocation = new LatLng(33.7756, -84.3963);
+    private static final int DEFAULT_ZOOM = 10;
+    private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
+    private boolean mLocationPermissionGranted;
+
+    // The geographical location where the device is currently located. That is, the last-known
+    // location retrieved by the Fused Location Provider.
+    private Location mLastKnownLocation;
+
+    // Keys for storing activity state.
+    private static final String KEY_CAMERA_POSITION = "camera_position";
+    private static final String KEY_LOCATION = "location";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Retrieve location and camera position from saved instance state.
+        if (savedInstanceState != null) {
+            mLastKnownLocation = savedInstanceState.getParcelable(KEY_LOCATION);
+            mCameraPosition = savedInstanceState.getParcelable(KEY_CAMERA_POSITION);
+        }
+
         setContentView(R.layout.activity_maps_master);
+
+        //GT defaults for the first time
+        if (mLastKnownLocation == null) {
+            //To avoid NullPointerException
+            Location GT_location = new Location("Default GT Location");
+            GT_location.setLatitude(33.7756);
+            GT_location.setLongitude(-84.3963);
+            mLastKnownLocation = GT_location;
+        }
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "TODO: Search for shelters", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
+        fab.setOnClickListener(view -> Snackbar.make(view, "TODO: Search for shelters", Snackbar.LENGTH_LONG)
+                .setAction("Action", null).show());
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -71,42 +106,29 @@ public class MapsMasterActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        //Getting the Shelters Table from DB and creating a new Model Instance for Shelters
-        shelterDB = FirebaseDatabase.getInstance().getReference().child("Shelters");
         model = Shelters.INSTANCE;
 
-        //TODO: Farzam: Check if the number of children in Shelters DB changes and clear model list and add shelters to model again
-        //Tried getting ChildrenCount from dataSnapShot and comparing it with getItems().size() but it returns 0 everytime
-        if (model.getItems().size() == 0) {
-            populateShelterInfo();
+        // Construct a FusedLocationProviderClient.
+        mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+
+        //Must be after shelter model is populated from the DB
+        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
+
+    }
+
+    /**
+     * Saves the state of the map when the activity is paused.
+     */
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        if (mMap != null) {
+            outState.putParcelable(KEY_CAMERA_POSITION, mMap.getCameraPosition());
+            outState.putParcelable(KEY_LOCATION, mLastKnownLocation);
+            super.onSaveInstanceState(outState);
         }
-
-        /*
-            The following block of code has been commented by Farzam (crashes)
-            However, this is how we would read data from our DB to change the userLabel.
-        */
-
-//        userLabel = (TextView) findViewById(R.id.userLabel);
-//
-//        currentUser = FirebaseAuth.getInstance().getCurrentUser();
-//        String RegisteredUserID = currentUser.getUid();
-//        userDB = FirebaseDatabase.getInstance().getReference().child("Users");
-//        DatabaseReference userDBref = userDB.child(RegisteredUserID);
-
-//        userDBref.addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(DataSnapshot dataSnapshot) {
-//                String name = dataSnapshot.child("Name").getValue(String.class);
-//                userLabel.setText(String.format("Hi %s", name));
-//            }
-//
-//            @Override
-//            public void onCancelled(DatabaseError databaseError) {
-//                userLabel.setText("github.com/farzamtn/ShelterApp");
-//                System.out.println("The read failed: " + databaseError.getMessage());
-//            }
-//        });
-
     }
 
     @Override
@@ -165,19 +187,15 @@ public class MapsMasterActivity extends AppCompatActivity
             AlertDialog.Builder builder = new AlertDialog.Builder(MapsMasterActivity.this);
             builder.setMessage("Are you sure you want to sign out?");
 
-            builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int which) {
-                    FirebaseAuth.getInstance().signOut(); //Ending FireBase session for this user
-                    Intent intent = new Intent(getBaseContext(), LoginActivity.class);
-                    startActivity(intent);
-                    finish();
-                }
+            builder.setPositiveButton("YES", (dialog, which) -> {
+                FirebaseAuth.getInstance().signOut(); //Ending FireBase session for this user
+                Intent intent = new Intent(getBaseContext(), LoginActivity.class);
+                startActivity(intent);
+                finish();
             });
 
-            builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int which) {
-                    //Do nothing
-                }
+            builder.setNegativeButton("NO", (dialog, which) -> {
+                //Do nothing
             });
             builder.show();
         }
@@ -187,71 +205,132 @@ public class MapsMasterActivity extends AppCompatActivity
         return true;
     }
 
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        mMap = googleMap;
+
+        //Move camera to GT (DEFAULT) coordinates - Added by Farzam
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mDefaultLocation, DEFAULT_ZOOM));
+
+        for (ShelterData s : model.getItems()) {
+            String shelterName = s.getName();
+            double shelterLatitude = s.getLatitude();
+            double shelterLongitude = s.getLongitude();
+            String shelterAddress = s.getAddress();
+
+            LatLng shelterLocation = new LatLng(shelterLatitude, shelterLongitude);
+
+            mMap.addMarker(new MarkerOptions().position(shelterLocation).title(shelterName).snippet(shelterAddress));
+        }
+
+        // Prompt the user for permission.
+        getLocationPermission();
+
+        // Turn on the My Location layer and the related control on the map.
+        updateLocationUI();
+
+        // Get the current location of the device and set the position of the map.
+        getDeviceLocation();
+    }
+
     /**
-     * Method for getting all the shelter info from the FireBase DB and adding it to the local model.
-     * Remember both the .csv file (for local bufferReading) and .json file (For FireBase DB) has been
-     * added to the res/raw just in case. - Farzam
+     * Prompts the user for permission to use the device location.
      */
-    private void populateShelterInfo() {
-        shelterDB.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                for (DataSnapshot shelters : dataSnapshot.getChildren()) {
-                   model.addItem(new ShelterData(shelters.child("Unique Key").getValue(Integer.class),
-                           shelters.child("Shelter Name").getValue(String.class),
-                           shelters.child("Capacity").getValue(String.class),
-                           shelters.child("Restrictions").getValue(String.class),
-                           shelters.child("Longitude").getValue(Double.class),
-                           shelters.child("Latitude").getValue(Double.class),
-                           shelters.child("Address").getValue(String.class),
-                           shelters.child("Special Notes").getValue(String.class),
-                           shelters.child("Phone Number").getValue(String.class)));
+    private void getLocationPermission() {
+        /*
+         * Request location permission, so that we can get the location of the
+         * device. The result of the permission request is handled by a callback,
+         * onRequestPermissionsResult.
+         */
+        if (ContextCompat.checkSelfPermission(this.getApplicationContext(),
+                android.Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+            mLocationPermissionGranted = true;
+        } else {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
+                    PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
+        }
+    }
+
+    /**
+     * Handles the result of the request for location permissions.
+     */
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           @NonNull String permissions[],
+                                           @NonNull int[] grantResults) {
+        mLocationPermissionGranted = false;
+        switch (requestCode) {
+            case PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    mLocationPermissionGranted = true;
                 }
             }
+        }
+        updateLocationUI();
+    }
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Log.d("Shelter DB Error", databaseError.getMessage());
+    /**
+     * Updates the map's UI settings based on whether the user has granted location permission.
+     */
+    private void updateLocationUI() {
+        if (mMap == null) {
+            return;
+        }
+        try {
+            if (mLocationPermissionGranted) {
+                mMap.setMyLocationEnabled(true);
+                mMap.getUiSettings().setMyLocationButtonEnabled(true);
+            } else {
+                mMap.setMyLocationEnabled(false);
+                mMap.getUiSettings().setMyLocationButtonEnabled(false);
+                mLastKnownLocation = null;
+//                getLocationPermission();
             }
-        });
+        } catch (SecurityException e)  {
+            Log.e("Exception: %s", e.getMessage());
+        }
+    }
 
-        /**
-         * The following code is for populating shelter information by
-         * reading the .csv file instead of getting data for DB (in case DB/App crashes) - Farzam
-         * TODO: Farzam: Remove following after demo and validation
+    /**
+     * Gets the current location of the device, and positions the map's camera.
+     */
+    private void getDeviceLocation() {
+        /*
+         * Get the best and most recent location of the device, which may be null in rare
+         * cases when a location is not available.
          */
-
-//        public static final int KEY_POSITION = 0;
-//        public static final int NAME_POSITION = 1;
-//        public static final int CAPACITY_POSITION = 2;
-//        public static final int RESTRICTION_POSITION = 3;
-//        public static final int LONGITUDE_POSITION = 4;
-//        public static final int LATITUDE_POSITION = 5;
-//        public static final int ADDRESS_POSITION = 6;
-//        public static final int NOTES_POSITION = 7;
-//        public static final int PHONENUMBER_POSITION = 8;
-
-//        try {
-//            //Open a stream on the raw file
-//            InputStream is = getResources().openRawResource(R.raw.shelterdatabase);
-//            //From here we probably should call a model method and pass the InputStream
-//            //Wrap it in a BufferedReader so that we get the readLine() method
-//            BufferedReader br = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
-//
-//            String line;
-//            br.readLine(); //get rid of header line
-//            while ((line = br.readLine()) != null) {
-//                String[] tokens = line.split(",");
-//                int key = Integer.parseInt(tokens[KEY_POSITION]);
-//                Double longitude = Double.parseDouble(tokens[LONGITUDE_POSITION]);
-//                Double latitude = Double.parseDouble(tokens[LATITUDE_POSITION]);
-//                model.addItem(new ShelterData(key, tokens[NAME_POSITION], tokens[CAPACITY_POSITION],
-//                        tokens[RESTRICTION_POSITION], longitude, latitude, tokens[ADDRESS_POSITION],
-//                        tokens[NOTES_POSITION], tokens[PHONENUMBER_POSITION]));
-//            }
-//            br.close();
-//        } catch (IOException e) {
-//            Log.d("Error in file read", e.getMessage());
-//        }
+        try {
+            if (mLocationPermissionGranted) {
+                Task<Location> locationResult = mFusedLocationProviderClient.getLastLocation();
+                locationResult.addOnCompleteListener(this, new OnCompleteListener<Location>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Location> task) {
+                        if (task.isSuccessful()) {
+                            // Set the map's camera position to the current location of the device.
+                            mLastKnownLocation = task.getResult();
+                            if (mLastKnownLocation != null) {
+                                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
+                                        new LatLng(mLastKnownLocation.getLatitude(),
+                                                mLastKnownLocation.getLongitude()), DEFAULT_ZOOM));
+                            } else {
+                                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mDefaultLocation, DEFAULT_ZOOM));
+                            }
+                        } else {
+                            Log.d(TAG, "Current location is null. Using defaults.");
+                            Log.e(TAG, "Exception: %s", task.getException());
+                            mMap.moveCamera(CameraUpdateFactory
+                                    .newLatLngZoom(mDefaultLocation, DEFAULT_ZOOM));
+                            mMap.getUiSettings().setMyLocationButtonEnabled(false);
+                        }
+                    }
+                });
+            }
+        } catch (SecurityException e)  {
+            Log.e("Exception: %s", e.getMessage());
+        }
     }
 }
