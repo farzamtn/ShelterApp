@@ -44,6 +44,10 @@ public class ShelterData {
         return capacity;
     }
 
+    public void setCapacity(String capacity) {
+        this.capacity = capacity;
+    }
+
     public String getRestrictions() {
         return restrictions;
     }
