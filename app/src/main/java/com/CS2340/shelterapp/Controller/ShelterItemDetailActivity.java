@@ -5,7 +5,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -13,7 +12,6 @@ import android.text.InputType;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import com.CS2340.shelterapp.Model.Shelters;
 import com.CS2340.shelterapp.R;
@@ -24,8 +22,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-
-import java.sql.SQLOutput;
 
 /**
  * An activity representing a single ShelterItem detail screen. This
@@ -463,6 +459,11 @@ public class ShelterItemDetailActivity extends AppCompatActivity {
     private void checkInUser() {
         updateDBUserBeds(Integer.parseInt(capChange));
         updateDBUserCheckedIn(mItem.getKey());
+
+//        Intent intent = getIntent();
+//        intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+//        finish();
+//        startActivity(intent);
     }
 
     private void checkOutUser() {
@@ -470,6 +471,11 @@ public class ShelterItemDetailActivity extends AppCompatActivity {
         beds = 0;
         updateDBUserCheckedIn(-1);
         checkedIn = -1;
+
+//        Intent intent = getIntent();
+//        intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+//        finish();
+//        startActivity(intent);
     }
 
     private void updateScreen() {
