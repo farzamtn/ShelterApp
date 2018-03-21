@@ -1,4 +1,4 @@
-package com.CS2340.shelterapp.Controller;
+package com.CS2340.shelterapp.Model;
 
 /**
  * Data class for ShelterItems which includes all the information for a specific shelter in the DB.

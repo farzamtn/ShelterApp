@@ -1,14 +1,16 @@
 package com.CS2340.shelterapp.Controller;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
@@ -17,9 +19,17 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 
+import com.CS2340.shelterapp.Model.ShelterData;
 import com.CS2340.shelterapp.Model.Shelters;
 import com.CS2340.shelterapp.R;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -30,23 +40,28 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+
+import java.util.ArrayList;
 
 /**
  * Main activity page with the main GoogleMap
  * and a Navigation Drawer for finding shelters and extra features.
  *
  * @author Farzam
- * @version 2.0
+ * @version 3.0
  */
 public class MapsMasterActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback {
 
     private static final String TAG = MapsMasterActivity.class.getSimpleName();
     private Shelters model;
+    private DatabaseReference shelterDB;
 
     private GoogleMap mMap;
     private CameraPosition mCameraPosition;
@@ -57,7 +72,7 @@ public class MapsMasterActivity extends AppCompatActivity
     // A default location (GT Atlanta, GA) and default zoom to use when location permission is
     // not granted.
     private final LatLng mDefaultLocation = new LatLng(33.7756, -84.3963);
-    private static final int DEFAULT_ZOOM = 10;
+    private static final int DEFAULT_ZOOM = 11;
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
     private boolean mLocationPermissionGranted;
 
@@ -68,6 +83,11 @@ public class MapsMasterActivity extends AppCompatActivity
     // Keys for storing activity state.
     private static final String KEY_CAMERA_POSITION = "camera_position";
     private static final String KEY_LOCATION = "location";
+
+    private ArrayList<Marker> markers; //For later filtering of markers
+
+    private PopupWindow popupWindow;
+    private CheckBox men_checkbox, women_checkbox, youngAdult_checkbox, children_checkbox, families_checkbox, veterans_checkbox;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,8 +114,6 @@ public class MapsMasterActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(view -> Snackbar.make(view, "TODO: Search for shelters", Snackbar.LENGTH_LONG)
-                .setAction("Action", null).show());
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -210,17 +228,28 @@ public class MapsMasterActivity extends AppCompatActivity
         //Move camera to GT (DEFAULT) coordinates - Added by Farzam
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mDefaultLocation, DEFAULT_ZOOM));
 
+        markers = new ArrayList<>();
+
+        //Adding marker pins for all shelters in the DB
         for (ShelterData s : model.getItems()) {
             String shelterName = s.getName();
             double shelterLatitude = s.getLatitude();
             double shelterLongitude = s.getLongitude();
-            String shelterAddress = s.getAddress();
             String shelterPhoneNumber = s.getPhoneNumber();
 
             LatLng shelterLocation = new LatLng(shelterLatitude, shelterLongitude);
 
-            mMap.addMarker(new MarkerOptions().position(shelterLocation).title(shelterName).snippet(shelterPhoneNumber));
+            Marker m = mMap.addMarker(new MarkerOptions().position(shelterLocation).title(shelterName).snippet(shelterPhoneNumber));
+            markers.add(m); //For later use in filtering markers
         }
+
+        /** Starting the respective Detail page about this shelter using the key - Farzam */
+        mMap.setOnInfoWindowClickListener(marker -> {
+            Intent intent = new Intent(getBaseContext(), ShelterItemDetailActivity.class);
+            intent.putExtra(ShelterItemDetailFragment.ARG_ITEM_ID, model.findItemByName(marker.getTitle()).getKey());
+            startActivity(intent);
+        });
+
 
         // Prompt the user for permission.
         getLocationPermission();
@@ -331,5 +360,163 @@ public class MapsMasterActivity extends AppCompatActivity
         } catch (SecurityException e)  {
             Log.e("Exception: %s", e.getMessage());
         }
+    }
+
+    /**
+     * Event handler for FAB which filters the pins displyed on the map. - Farzam
+     */
+    public void newPopup(View view) {
+        //instantiate the maps_master_popup.xml layout file
+        LayoutInflater layoutInflater = (LayoutInflater) MapsMasterActivity.this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View customView = layoutInflater.inflate(R.layout.maps_master_popup,null);
+
+        men_checkbox = (CheckBox) customView.findViewById(R.id.men_checkbox);
+        women_checkbox = (CheckBox) customView.findViewById(R.id.women_checkbox);
+        youngAdult_checkbox = (CheckBox) customView.findViewById(R.id.youngAdult_checkbox);
+        children_checkbox = (CheckBox) customView.findViewById(R.id.children_checkbox);
+        families_checkbox = (CheckBox) customView.findViewById(R.id.families_checkbox);
+        veterans_checkbox = (CheckBox) customView.findViewById(R.id.veterans_checkbox);
+        Button closePopupBtn = (Button) customView.findViewById(R.id.closePopupBtn);
+        Button resetBtn = (Button) customView.findViewById(R.id.resetBtn);
+
+        //Retrieving saved instances of checkedboxes
+        SharedPreferences sp = getSharedPreferences("Men Check Boxes", MODE_PRIVATE);
+        SharedPreferences.Editor editor = sp.edit();
+
+        men_checkbox.setChecked(sp.getBoolean("men check", false));
+        women_checkbox.setChecked(sp.getBoolean("women check", false));
+        youngAdult_checkbox.setChecked(sp.getBoolean("young adult check", false));
+        children_checkbox.setChecked(sp.getBoolean("children check", false));
+        families_checkbox.setChecked(sp.getBoolean("families check", false));
+        veterans_checkbox.setChecked(sp.getBoolean("veterans check", false));
+
+
+        //instantiate popup window
+        popupWindow = new PopupWindow(customView, LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        popupWindow.setOutsideTouchable(false);
+        popupWindow.setFocusable(true);
+
+        CoordinatorLayout c = (CoordinatorLayout) findViewById(R.id.coordinatorLayout);
+        //display the popup window
+        popupWindow.showAtLocation(c, Gravity.CENTER, 0, 0);
+
+        //set filter and close the popupwindow
+        closePopupBtn.setOnClickListener(v -> {
+            //Saving checkbox instances
+            editor.putBoolean("men check", men_checkbox.isChecked());
+            editor.apply();
+
+            editor.putBoolean("women check", women_checkbox.isChecked());
+            editor.apply();
+
+            editor.putBoolean("young adult check", youngAdult_checkbox.isChecked());
+            editor.apply();
+
+            editor.putBoolean("children check", children_checkbox.isChecked());
+            editor.apply();
+
+            editor.putBoolean("families check", families_checkbox.isChecked());
+            editor.apply();
+
+            editor.putBoolean("veterans check", veterans_checkbox.isChecked());
+            editor.apply();
+
+            //If all filters all selected show everything
+            if (!(men_checkbox.isChecked() && women_checkbox.isChecked() && youngAdult_checkbox.isChecked()
+                    && children_checkbox.isChecked()
+                    && families_checkbox.isChecked() && veterans_checkbox.isChecked())) {
+                //Making sure at leats one filter is selected
+                if (men_checkbox.isChecked() || women_checkbox.isChecked() || youngAdult_checkbox.isChecked()
+                        || children_checkbox.isChecked()
+                        || families_checkbox.isChecked() || veterans_checkbox.isChecked()) {
+                    for (Marker m : markers) {
+                        m.setVisible(false);
+                        ShelterData s = model.findItemByName(m.getTitle());
+
+                        //Displaying shelters with no restrictions for all filters
+                        if (s.getRestrictions().trim().toLowerCase().equals("anyone")
+                                || s.getRestrictions().toLowerCase().equals("no restrictions")) {
+                            m.setVisible(true);
+                        }
+
+                        if (men_checkbox.isChecked()) {
+                            if (s.getRestrictions().trim().toLowerCase().equals("men")) {
+                                m.setVisible(true);
+                            }
+                        }
+
+                        if (women_checkbox.isChecked()) {
+                            if (s.getRestrictions().trim().toLowerCase().contains("women")) {
+                                m.setVisible(true);
+                            }
+                        }
+
+                        if (youngAdult_checkbox.isChecked()) {
+                            if (s.getRestrictions().toLowerCase().equals("young adults")) {
+                                m.setVisible(true);
+                            }
+                        }
+
+                        if (children_checkbox.isChecked()) {
+                            if (s.getRestrictions().trim().toLowerCase().contains("children")) {
+                                m.setVisible(true);
+                            }
+                        }
+
+                        if (families_checkbox.isChecked()) {
+                            if (s.getRestrictions().trim().toLowerCase().contains("famil")) {
+                                m.setVisible(true);
+                            }
+                        }
+
+                        if (veterans_checkbox.isChecked()) {
+                            if (s.getRestrictions().trim().toLowerCase().equals("veterans")) {
+                                m.setVisible(true);
+                            }
+                        }
+                    }
+                }
+            }
+
+            popupWindow.dismiss();
+        });
+
+        //show all markers again and close the popupwindow
+        resetBtn.setOnClickListener(view1 -> {
+            for (Marker m : markers) {
+                m.setVisible(true);
+            }
+
+            //Move camera to GT (DEFAULT) coordinates - Added by Farzam
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mDefaultLocation, DEFAULT_ZOOM));
+
+            //Clearing all check boxes and their saved instances
+            men_checkbox.setChecked(false);
+            women_checkbox.setChecked(false);
+            youngAdult_checkbox.setChecked(false);
+            children_checkbox.setChecked(false);
+            families_checkbox.setChecked(false);
+            veterans_checkbox.setChecked(false);
+
+            editor.putBoolean("men check", men_checkbox.isChecked());
+            editor.apply();
+
+            editor.putBoolean("women check", women_checkbox.isChecked());
+            editor.apply();
+
+            editor.putBoolean("young adult check", youngAdult_checkbox.isChecked());
+            editor.apply();
+
+            editor.putBoolean("children check", children_checkbox.isChecked());
+            editor.apply();
+
+            editor.putBoolean("families check", families_checkbox.isChecked());
+            editor.apply();
+
+            editor.putBoolean("veterans check", veterans_checkbox.isChecked());
+            editor.apply();
+
+            popupWindow.dismiss();
+        });
     }
 }

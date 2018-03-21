@@ -12,6 +12,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.CS2340.shelterapp.Model.Login;
+import com.CS2340.shelterapp.Model.ShelterData;
 import com.CS2340.shelterapp.Model.Shelters;
 import com.CS2340.shelterapp.R;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -29,7 +30,7 @@ import com.google.firebase.database.ValueEventListener;
  * A login screen that offers login via email/password.
  *
  * @author Farzam
- * @version 1.4
+ * @version 1.5
  */
 public class LoginActivity extends AppCompatActivity {
 
@@ -212,7 +213,7 @@ public class LoginActivity extends AppCompatActivity {
      * Remember both the .csv file (for local bufferReading) and .json file (For FireBase DB) has been
      * added to the res/raw just in case. - Farzam
      */
-    private void populateShelterInfo() {
+    public void populateShelterInfo() {
         shelterDB.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
