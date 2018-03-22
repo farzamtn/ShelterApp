@@ -14,6 +14,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 
+import com.CS2340.shelterapp.Model.ShelterData;
 import com.CS2340.shelterapp.Model.Shelters;
 import com.CS2340.shelterapp.R;
 import com.google.firebase.auth.FirebaseAuth;

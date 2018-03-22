@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:background="@color/colorPrimaryDark"
+    android:padding="15dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Restrictions"
+        android:textColor="@android:color/white"/>
+
+    <View
+        android:id="@+id/divider"
+        android:layout_width="100dp"
+        android:layout_height="1dp"
+        android:background="@android:color/darker_gray" />
+
+    <CheckBox
+        android:id="@+id/men_checkbox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Men"
+        android:textColor="@android:color/white"/>
+
+    <CheckBox
+        android:id="@+id/women_checkbox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Women"
+        android:textColor="@android:color/white"/>
+
+    <CheckBox
+        android:id="@+id/youngAdult_checkbox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Young Adults"
+        android:textColor="@android:color/white"/>
+
+    <CheckBox
+        android:id="@+id/children_checkbox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Children"
+        android:textColor="@android:color/white"/>
+
+    <CheckBox
+        android:id="@+id/families_checkbox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Families"
+        android:textColor="@android:color/white"/>
+
+    <CheckBox
+        android:id="@+id/veterans_checkbox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Veterans"
+        android:textColor="@android:color/white"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Set"
+        android:textColor="@android:color/white"
+        android:background="@color/colorPrimaryDark"
+        style="?android:attr/borderlessButtonStyle"
+        android:id="@+id/closePopupBtn" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Reset"
+        android:textColor="@android:color/white"
+        style="?android:attr/borderlessButtonStyle"
+        android:id="@+id/resetBtn" />
+
+</LinearLayout>
