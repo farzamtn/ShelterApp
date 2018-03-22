@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.CS2340.shelterapp.Controller.MapsMasterActivity">
+    tools:context="com.CS2340.shelterapp.Controller.MapsMasterActivity"
+    android:id="@+id/coordinatorLayout">
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
@@ -20,7 +21,9 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <include layout="@layout/content_maps_master" />
+    <include
+        android:id="@+id/include"
+        layout="@layout/content_maps_master" />
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"
@@ -28,7 +31,11 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
-        app:backgroundTint="@color/common_google_signin_btn_text_dark_default"
+        android:onClick="newPopup"
+        app:backgroundTint="@color/gtColor"
+        app:fabSize="normal"
+        app:layout_anchor="@+id/include"
+        app:layout_anchorGravity="left|top"
         app:rippleColor="@color/common_google_signin_btn_text_dark_focused"
         app:srcCompat="?android:attr/actionModeWebSearchDrawable" />
 

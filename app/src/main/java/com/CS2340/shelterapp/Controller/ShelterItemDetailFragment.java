@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.CS2340.shelterapp.Model.ShelterData;
 import com.CS2340.shelterapp.Model.Shelters;
 import com.CS2340.shelterapp.R;
 
@@ -66,7 +67,7 @@ public class ShelterItemDetailFragment extends Fragment {
         if (mItem != null) {
             ((TextView) rootView.findViewById(R.id.shelterName)).setText(String.format("Name: %s", mItem.getName()));
             ((TextView) rootView.findViewById(R.id.shelterCapacity)).setText(String.format("Capacity: %s", mItem.getCapacity()));
-            ((TextView) rootView.findViewById(R.id.shelterResriction)).setText(String.format("Restrictions: %s", mItem.getRestrictions()));
+            ((TextView) rootView.findViewById(R.id.shelterRestriction)).setText(String.format("Restrictions: %s", mItem.getRestrictions()));
             ((TextView) rootView.findViewById(R.id.shelterLongitude)).setText(String.format("Longitude: %s", mItem.getLongitude()));
             ((TextView) rootView.findViewById(R.id.shelterLatitude)).setText(String.format("Latitude: %s", mItem.getLatitude()));
             ((TextView) rootView.findViewById(R.id.shelterAddress)).setText(String.format("Address: %s", mItem.getAddress()));

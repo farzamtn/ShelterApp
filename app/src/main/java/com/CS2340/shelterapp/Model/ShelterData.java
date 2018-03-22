@@ -1,4 +1,4 @@
-package com.CS2340.shelterapp.Controller;
+package com.CS2340.shelterapp.Model;
 
 /**
  * Data class for ShelterItems which includes all the information for a specific shelter in the DB.
@@ -42,6 +42,10 @@ public class ShelterData {
 
     public String getCapacity() {
         return capacity;
+    }
+
+    public void setCapacity(String capacity) {
+        this.capacity = capacity;
     }
 
     public String getRestrictions() {

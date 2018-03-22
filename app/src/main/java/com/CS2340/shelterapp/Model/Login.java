@@ -7,17 +7,21 @@ import java.util.regex.Pattern;
  * Model class for LoginActivity that handles user/pass validity.
  *
  * @author Farzam
- * @version 1.0
+ * @version 1.1
  */
 public class Login {
+
+    /**  the one and only instance of this class for the singleton pattern */
+    private static Login INSTANCE = new Login();
 
     private String username;
     private String password;
 
-    public Login (String username, String password) {
-        this.username = username;
-        this.password = password;
-    }
+    /**
+     * This is the singleton pattern accessor.  Call this to get the instance of this class
+     * @return  the one instance of the facade
+     */
+    public static Login getInstance() { return INSTANCE; }
 
 
     public static boolean isUsernameValid(String user) {

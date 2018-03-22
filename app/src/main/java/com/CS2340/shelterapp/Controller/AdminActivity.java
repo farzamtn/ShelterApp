@@ -23,7 +23,7 @@ import com.google.firebase.auth.FirebaseAuth;
  * Admin Activity page that will contain the tasks an admin can do
  *
  * @author chandler
- * @version 1.0
+ * @version 1.1
  */
 public class AdminActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
