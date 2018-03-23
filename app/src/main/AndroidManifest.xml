@@ -27,7 +27,8 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".Controller.LoginActivity"
-            android:label="@string/title_activity_login">
+            android:label="@string/title_activity_login"
+            android:theme="@style/AppTheme.Launcher">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -65,8 +66,7 @@
         <activity
             android:name=".Controller.AdminActivity"
             android:label="@string/title_activity_admin"
-            android:theme="@style/AppTheme.NoActionBar">
-        </activity>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".Controller.ShelterItemListActivity"
             android:label="@string/title_shelteritem_list"
@@ -84,6 +84,15 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.CS2340.shelterapp.Controller.ShelterItemListActivity" />
+        </activity>
+        <activity
+            android:name=".Controller.SettingsActivity"
+            android:label="@string/title_activity_settings"
+            android:parentActivityName=".Controller.MapsMasterActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.CS2340.shelterapp.Controller.MapsMasterActivity" />
         </activity>
     </application>
 

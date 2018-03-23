@@ -30,8 +30,8 @@ public class Shelters {
     }
 
     public ShelterData findItemByName(String name) {
-        for (ShelterData d: items) {
-            if (d.getName().equals(name)) return d;
+        for (ShelterData sd: items) {
+            if (sd.getName().equals(name)) return sd;
         }
 
         Log.d("Can't Find Shelter", "Warning - Failed to find name: " + name);
@@ -39,8 +39,8 @@ public class Shelters {
     }
 
     public ShelterData findItemById(int id) {
-        for (ShelterData d : items) {
-            if (d.getKey() == id) return d;
+        for (ShelterData sd : items) {
+            if (sd.getKey() == id) return sd;
         }
 
         Log.d("Can't Find Shelter", "Warning - Failed to find id: " + id);

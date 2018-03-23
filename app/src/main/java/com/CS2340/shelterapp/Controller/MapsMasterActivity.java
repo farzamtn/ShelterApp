@@ -63,8 +63,11 @@ public class MapsMasterActivity extends AppCompatActivity
     private Shelters model;
     private DatabaseReference shelterDB;
 
+    private FirebaseAuth mAuth;
+
     private GoogleMap mMap;
     private CameraPosition mCameraPosition;
+    private ArrayList<Marker> markers; //For later filtering of markers
 
     // The entry point to the Fused Location Provider.
     private FusedLocationProviderClient mFusedLocationProviderClient;
@@ -84,8 +87,6 @@ public class MapsMasterActivity extends AppCompatActivity
     private static final String KEY_CAMERA_POSITION = "camera_position";
     private static final String KEY_LOCATION = "location";
 
-    private ArrayList<Marker> markers; //For later filtering of markers
-
     private PopupWindow popupWindow;
     private CheckBox men_checkbox, women_checkbox, youngAdult_checkbox, children_checkbox, families_checkbox, veterans_checkbox;
 
@@ -100,6 +101,11 @@ public class MapsMasterActivity extends AppCompatActivity
         }
 
         setContentView(R.layout.activity_maps_master);
+
+        //Get Firebase auth instance
+        mAuth = FirebaseAuth.getInstance();
+
+        checkIfEmailVerified();
 
         //GT defaults for the first time
         if (mLastKnownLocation == null) {
@@ -135,6 +141,21 @@ public class MapsMasterActivity extends AppCompatActivity
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
+    }
+
+    private void checkIfEmailVerified() {
+        //Letting the user know they need to verify they email if they haven't already done so
+        if (!mAuth.getCurrentUser().isEmailVerified()) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(MapsMasterActivity.this);
+            builder.setMessage("For later email/password recovery and changes to your account you need to verify your email. Please" +
+                    " check your email and follow the instructions as soon as possible. If you did not get any email, please go to settings and resend the verification email.");
+
+            builder.setNeutralButton("OK", (dialog, which) -> {
+                //Do nothing
+            });
+
+            builder.show();
+        }
     }
 
     /**
@@ -175,7 +196,8 @@ public class MapsMasterActivity extends AppCompatActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-            return true;
+            Intent intent = new Intent(this, SettingsActivity.class);
+            startActivity(intent);
         }
 
         return super.onOptionsItemSelected(item);
@@ -422,57 +444,62 @@ public class MapsMasterActivity extends AppCompatActivity
             editor.apply();
 
             //If all filters all selected show everything
-            if (!(men_checkbox.isChecked() && women_checkbox.isChecked() && youngAdult_checkbox.isChecked()
+            if (!(men_checkbox.isChecked() && women_checkbox.isChecked()
+                    && youngAdult_checkbox.isChecked()
                     && children_checkbox.isChecked()
                     && families_checkbox.isChecked() && veterans_checkbox.isChecked())) {
-                //Making sure at leats one filter is selected
-                if (men_checkbox.isChecked() || women_checkbox.isChecked() || youngAdult_checkbox.isChecked()
-                        || children_checkbox.isChecked()
-                        || families_checkbox.isChecked() || veterans_checkbox.isChecked()) {
-                    for (Marker m : markers) {
-                        m.setVisible(false);
-                        ShelterData s = model.findItemByName(m.getTitle());
+                for (Marker m : markers) {
+                    m.setVisible(true);
+                }
+            }
 
-                        //Displaying shelters with no restrictions for all filters
-                        if (s.getRestrictions().trim().toLowerCase().equals("anyone")
-                                || s.getRestrictions().toLowerCase().equals("no restrictions")) {
+            //Making sure at leats one filter is selected
+            if (men_checkbox.isChecked() || women_checkbox.isChecked() || youngAdult_checkbox.isChecked()
+                    || children_checkbox.isChecked()
+                    || families_checkbox.isChecked() || veterans_checkbox.isChecked()) {
+                for (Marker m : markers) {
+                    m.setVisible(false);
+                    ShelterData s = model.findItemByName(m.getTitle());
+
+                    //Displaying shelters with no restrictions for all filters
+                    if (s.getRestrictions().trim().toLowerCase().equals("anyone")
+                            || s.getRestrictions().toLowerCase().equals("no restrictions")) {
+                        m.setVisible(true);
+                    }
+
+                    if (men_checkbox.isChecked()) {
+                        if (s.getRestrictions().trim().toLowerCase().equals("men")) {
                             m.setVisible(true);
                         }
+                    }
 
-                        if (men_checkbox.isChecked()) {
-                            if (s.getRestrictions().trim().toLowerCase().equals("men")) {
-                                m.setVisible(true);
-                            }
+                    if (women_checkbox.isChecked()) {
+                        if (s.getRestrictions().trim().toLowerCase().contains("women")) {
+                            m.setVisible(true);
                         }
+                    }
 
-                        if (women_checkbox.isChecked()) {
-                            if (s.getRestrictions().trim().toLowerCase().contains("women")) {
-                                m.setVisible(true);
-                            }
+                    if (youngAdult_checkbox.isChecked()) {
+                        if (s.getRestrictions().toLowerCase().equals("young adults")) {
+                            m.setVisible(true);
                         }
+                    }
 
-                        if (youngAdult_checkbox.isChecked()) {
-                            if (s.getRestrictions().toLowerCase().equals("young adults")) {
-                                m.setVisible(true);
-                            }
+                    if (children_checkbox.isChecked()) {
+                        if (s.getRestrictions().trim().toLowerCase().contains("children")) {
+                            m.setVisible(true);
                         }
+                    }
 
-                        if (children_checkbox.isChecked()) {
-                            if (s.getRestrictions().trim().toLowerCase().contains("children")) {
-                                m.setVisible(true);
-                            }
+                    if (families_checkbox.isChecked()) {
+                        if (s.getRestrictions().trim().toLowerCase().contains("famil")) {
+                            m.setVisible(true);
                         }
+                    }
 
-                        if (families_checkbox.isChecked()) {
-                            if (s.getRestrictions().trim().toLowerCase().contains("famil")) {
-                                m.setVisible(true);
-                            }
-                        }
-
-                        if (veterans_checkbox.isChecked()) {
-                            if (s.getRestrictions().trim().toLowerCase().equals("veterans")) {
-                                m.setVisible(true);
-                            }
+                    if (veterans_checkbox.isChecked()) {
+                        if (s.getRestrictions().trim().toLowerCase().equals("veterans")) {
+                            m.setVisible(true);
                         }
                     }
                 }

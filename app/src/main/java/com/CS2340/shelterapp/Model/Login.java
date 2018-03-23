@@ -12,17 +12,13 @@ import java.util.regex.Pattern;
 public class Login {
 
     /**  the one and only instance of this class for the singleton pattern */
-    private static Login INSTANCE = new Login();
-
-    private String username;
-    private String password;
+    public static Login INSTANCE = new Login();
 
     /**
      * This is the singleton pattern accessor.  Call this to get the instance of this class
-     * @return  the one instance of the facade
+     * @return the one instance of the facade
      */
     public static Login getInstance() { return INSTANCE; }
-
 
     public static boolean isUsernameValid(String user) {
         //TODO: Replace this with your own logic

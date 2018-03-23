@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -20,6 +21,8 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -27,7 +30,7 @@ import com.google.firebase.database.FirebaseDatabase;
  * A registration screen that offers Shelter App registration.
  *
  * @author Farzam
- * @version 1.2
+ * @version 2.0
  */
 public class RegistrationActivity extends AppCompatActivity {
 
@@ -152,16 +155,35 @@ public class RegistrationActivity extends AppCompatActivity {
                                 Toast.makeText(RegistrationActivity.this, "Authentication failed." + task.getException(),
                                         Toast.LENGTH_LONG).show();
                             } else {
+                                if (mAuth.getCurrentUser() != null) {
+                                    UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
+                                            .setDisplayName(fullName)
+                                            .build();
 
-                                //Adding new user information to DB with Uid being their Unique Key
-                                String user_id = mAuth.getCurrentUser().getUid();
-                                DatabaseReference current_user_db = mRegisterDatabase.child(user_id);
-                                current_user_db.child("Name").setValue(fullName);
-                                current_user_db.child("Email").setValue(user);
-                                current_user_db.child("Phone Number").setValue(phoneNum);
-                                current_user_db.child("User Type").setValue(userType);
-                                current_user_db.child("Checked In").setValue(-1);
-                                current_user_db.child("Beds").setValue(0);
+                                    //Updating user name
+                                    mAuth.getCurrentUser().updateProfile(profileUpdates).addOnCompleteListener(task1 -> {
+                                        if (!task1.isSuccessful()) {
+                                            Log.d("Update profile error", task.getException().toString());
+                                        }
+                                    });
+
+                                    //Updating user email
+                                    mAuth.getCurrentUser().updateEmail(user).addOnCompleteListener(task12 -> {
+                                       if (!task.isSuccessful()) {
+                                          Log.d("Update Email error", task.getException().toString());
+                                       }
+                                    });
+
+                                    //Adding new user information to DB with Uid being their Unique Key
+                                    String user_id = mAuth.getCurrentUser().getUid();
+                                    DatabaseReference current_user_db = mRegisterDatabase.child(user_id);
+                                    current_user_db.child("Name").setValue(fullName);
+                                    current_user_db.child("Email").setValue(user);
+                                    current_user_db.child("Phone Number").setValue(phoneNum);
+                                    current_user_db.child("User Type").setValue(userType);
+                                    current_user_db.child("Checked In").setValue(-1);
+                                    current_user_db.child("Beds").setValue(0);
+                                }
 
                                 Toast.makeText(RegistrationActivity.this, "Your new account has been created. Welcome!",
                                         Toast.LENGTH_LONG).show();
@@ -170,15 +192,41 @@ public class RegistrationActivity extends AppCompatActivity {
                                 if (userType.equals("Admin")){
                                     startActivity(new Intent(RegistrationActivity.this, AdminActivity.class));
                                 } else if (userType.equals("Shelter Employee")) {
+                                    sendVerificationEmail();
                                     startActivity(new Intent(RegistrationActivity.this, LoginActivity.class));
                                     finish();
                                 } else if (userType.equals("Shelter Seeker")) {
+                                    sendVerificationEmail();
                                     startActivity(new Intent(RegistrationActivity.this, LoginActivity.class));
                                     finish();
                                 }
                             }
                         }
                     });
+        }
+    }
+
+    /**
+     * Method for sending verification email for the current user - Farzam
+     */
+    private void sendVerificationEmail() {
+        FirebaseUser user = mAuth.getCurrentUser();
+        if (user != null) {
+            user.sendEmailVerification().addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    if (task.isSuccessful()) {
+                        Log.d("Verification Email:", "Email sent.");
+                    } else {
+                        Toast.makeText(RegistrationActivity.this, "Cannot send verification email. Please try again later." + task.getException(),
+                                Toast.LENGTH_LONG).show();
+                    }
+
+                }
+            });
+        } else {
+            Toast.makeText(RegistrationActivity.this, "(For dev: null user) Cannot send verification email. Please try again later.",
+                    Toast.LENGTH_LONG).show();
         }
     }
 

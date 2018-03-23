@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center_horizontal"
+    android:gravity="center_vertical"
     android:orientation="vertical"
     android:paddingBottom="@dimen/activity_vertical_margin"
     android:paddingLeft="@dimen/activity_horizontal_margin"
@@ -15,22 +15,17 @@
     <ProgressBar
         android:id="@+id/login_progress"
         style="?android:attr/progressBarStyleLarge"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="center|bottom"
         android:layout_marginBottom="10dp"
         android:visibility="gone" />
 
-    <ImageView
-        android:id="@+id/gt_logo_login"
-        android:layout_width="match_parent"
-        android:layout_height="199dp"
-        app:srcCompat="@drawable/gt_full_logo" />
-
     <ScrollView
         android:id="@+id/login_form"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_gravity="center">
 
         <LinearLayout
             android:id="@+id/email_login_form"
@@ -39,6 +34,12 @@
             android:focusable="true"
             android:focusableInTouchMode="true"
             android:orientation="vertical">
+
+            <ImageView
+                android:id="@+id/gt_logo_login"
+                android:layout_width="match_parent"
+                android:layout_height="157dp"
+                app:srcCompat="@drawable/gt_full_logo" />
 
             <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
@@ -99,8 +100,19 @@
                 android:textColor="@android:color/background_light"
                 android:textStyle="bold" />
 
+            <Button
+                android:id="@+id/resetPassword_button"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Forgot Password?"
+                android:onClick="passwordReset"
+                android:textAllCaps="false"
+                android:textColor="@color/gtColor"
+                android:textStyle="bold" />
+
             <TextView
-                android:id="@+id/textView2"
+                android:id="@+id/copyRight"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
