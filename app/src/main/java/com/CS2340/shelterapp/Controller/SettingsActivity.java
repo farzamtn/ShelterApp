@@ -13,6 +13,10 @@ import android.widget.Toast;
 import com.CS2340.shelterapp.R;
 import com.google.firebase.auth.FirebaseAuth;
 
+/**
+ * @author Farzam
+ * @version 1.0
+ */
 public class SettingsActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
@@ -51,6 +55,11 @@ public class SettingsActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Method for resending the verification email in the setting page.
+     *
+     * @param view the current view
+     */
     public void resendVerificationEmail(View view) {
         if (mAuth.getCurrentUser() != null) {
             if (!mAuth.getCurrentUser().isEmailVerified()) {

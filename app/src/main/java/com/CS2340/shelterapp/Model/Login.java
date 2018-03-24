@@ -15,13 +15,12 @@ public class Login {
     public static Login INSTANCE = new Login();
 
     /**
-     * This is the singleton pattern accessor.  Call this to get the instance of this class
-     * @return the one instance of the facade
+     * Checks if a username is valid.
+     *
+     * @param user the String to be checked for rulles
+     * @return true if valid
      */
-    public static Login getInstance() { return INSTANCE; }
-
     public static boolean isUsernameValid(String user) {
-        //TODO: Replace this with your own logic
         return isValidEmail(user);
     }
 

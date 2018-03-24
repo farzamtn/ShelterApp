@@ -32,7 +32,7 @@ import com.google.firebase.database.ValueEventListener;
  * A login screen that offers login via email/password + Email/Password recovery (added after M9 by Farzam)
  *
  * @author Farzam
- * @version 2,0
+ * @version 2.0
  */
 public class LoginActivity extends AppCompatActivity {
 
@@ -217,6 +217,10 @@ public class LoginActivity extends AppCompatActivity {
         startActivity(new Intent(LoginActivity.this, RegistrationActivity.class));
     }
 
+    /**
+     * Method that gets fired when Forgot Password button is pressed.
+     * @param view the current view
+     */
     public void passwordReset(View view) {
         AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this);
         builder.setTitle("Enter Email");
@@ -230,23 +234,27 @@ public class LoginActivity extends AppCompatActivity {
 
         builder.setPositiveButton("Reset Password", (dialogInterface, i) -> {
             String emailAddress = input.getText().toString();
-            if (!Login.isValidEmail(emailAddress)) {
-                Toast.makeText(LoginActivity.this, "Invalid email entered. Please enter a valid email address.",
+            if (TextUtils.isEmpty(emailAddress)) {
+                Toast.makeText(LoginActivity.this, "No email was entered. Try again.",
                         Toast.LENGTH_LONG).show();
             } else {
-                mAuth.sendPasswordResetEmail(emailAddress).addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        Toast.makeText(LoginActivity.this, "Password reset email sent. Please follow the instructions in the email" +
-                                        " to reset your password.",
-                                Toast.LENGTH_LONG).show();
-                    } else {
-                        Log.d("Pass Reset", task.getException().toString());
-                        Toast.makeText(LoginActivity.this, "There is no account associated with this email. Try a different email.",
-                                Toast.LENGTH_LONG).show();
-                    }
-                });
+                if (!Login.isValidEmail(emailAddress)) {
+                    Toast.makeText(LoginActivity.this, "Invalid email entered. Please enter a valid email address.",
+                            Toast.LENGTH_LONG).show();
+                } else {
+                    mAuth.sendPasswordResetEmail(emailAddress).addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            Toast.makeText(LoginActivity.this, "Password reset email sent. Please follow the instructions in the email" +
+                                            " to reset your password.",
+                                    Toast.LENGTH_LONG).show();
+                        } else {
+                            Log.d("Pass Reset", task.getException().toString());
+                            Toast.makeText(LoginActivity.this, "There is no account associated with this email. Try a different email.",
+                                    Toast.LENGTH_LONG).show();
+                        }
+                    });
+                }
             }
-
         });
 
         builder.setNegativeButton("Cancel", (dialogInterface, i) -> {
