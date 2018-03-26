@@ -167,6 +167,13 @@ public class LoginActivity extends AppCompatActivity {
                                 conditionRef.addValueEventListener(new ValueEventListener() {
                                     @Override
                                     public void onDataChange(DataSnapshot dataSnapshot) {
+                                        String disabled = dataSnapshot.child("Disabled").getValue(String.class);
+                                        if (disabled.equals("true")) {
+                                            View focusView = email;
+                                            email.setError("User is Banned");
+                                            FirebaseAuth.getInstance().signOut();
+                                            return;
+                                        }
                                         String userType = dataSnapshot.child("User Type").getValue(String.class);
                                         if(userType.equals("Admin")){
                                             Intent intentUser = new Intent(LoginActivity.this, AdminActivity.class);
