@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.SearchView;
 import android.widget.TextView;
 
+import com.CS2340.shelterapp.Model.ShelterData;
 import com.CS2340.shelterapp.Model.Shelters;
 import com.CS2340.shelterapp.R;
 

@@ -1,9 +1,11 @@
 package com.CS2340.shelterapp.Controller;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.text.InputType;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -12,6 +14,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.CS2340.shelterapp.Model.Login;
+import com.CS2340.shelterapp.Model.ShelterData;
 import com.CS2340.shelterapp.Model.Shelters;
 import com.CS2340.shelterapp.R;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -26,10 +29,10 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 /**
- * A login screen that offers login via email/password.
+ * A login screen that offers login via email/password + Email/Password recovery (added after M9 by Farzam)
  *
  * @author Farzam
- * @version 1.4
+ * @version 2.0
  */
 public class LoginActivity extends AppCompatActivity {
 
@@ -39,20 +42,26 @@ public class LoginActivity extends AppCompatActivity {
 
     private DatabaseReference shelterDB;
 
-    private Shelters model;
+    private Shelters shelterModel;
+
+    private Login loginModel;
 
     // UI references.
     private EditText email;
     private EditText password;
     private Button signInButton;
     private Button registerButton;
+    private Button resetPassword_button;
     private View progressBar;
     private View LoginFormView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        setTheme(R.style.AppTheme); //For splash screen - Farzam
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        loginModel = Login.INSTANCE;
 
         //Get Firebase auth instance
         mAuth = FirebaseAuth.getInstance();
@@ -62,14 +71,14 @@ public class LoginActivity extends AppCompatActivity {
 
         //Getting the Shelters Table from DB and creating a new Model Instance for Shelters
         shelterDB = FirebaseDatabase.getInstance().getReference().child("Shelters");
-        model = Shelters.INSTANCE;
+        shelterModel = Shelters.INSTANCE;
 
         //Check if user is already signed on (persistence)
         if (mAuth.getCurrentUser() != null) {
-            //Populating shelter model class after successful login attempt
-            //TODO: Farzam: Check if the number of children in Shelters DB changes and clear model list and add shelters to model again
+            //Populating shelter shelterModel class after successful login attempt
+            //TODO: Farzam: Check if the number of children in Shelters DB changes and clear shelterModel list and add shelters to shelterModel again
             //following TODO: Tried getting ChildrenCount from dataSnapShot and comparing it with getItems().size() but it returns 0 everytime
-            if (model.getItems().size() == 0) {
+            if (shelterModel.getItems().size() == 0) {
                 populateShelterInfo();
             }
 
@@ -82,6 +91,7 @@ public class LoginActivity extends AppCompatActivity {
         password = (EditText) findViewById(R.id.password);
         signInButton = (Button) findViewById(R.id.sign_in_button);
         registerButton = (Button) findViewById(R.id.register_button);
+        resetPassword_button = (Button) findViewById(R.id.resetPassword_button);
         progressBar = findViewById(R.id.login_progress);
         LoginFormView = findViewById(R.id.login_form);
     }
@@ -151,10 +161,10 @@ public class LoginActivity extends AppCompatActivity {
                                 // there was an error
                                 Toast.makeText(LoginActivity.this, getString(R.string.auth_failed), Toast.LENGTH_LONG).show();
                             } else {
-                                //Populating shelter model class after successful login attempt
-                                //TODO: Farzam: Check if the number of children in Shelters DB changes and clear model list and add shelters to model again
+                                //Populating shelter shelterModel class after successful login attempt
+                                //TODO: Farzam: Check if the number of children in Shelters DB changes and clear shelterModel list and add shelters to shelterModel again
                                 //following TODO: Tried getting ChildrenCount from dataSnapShot and comparing it with getItems().size() but it returns 0 everytime
-                                if (model.getItems().size() == 0) {
+                                if (shelterModel.getItems().size() == 0) {
                                     populateShelterInfo();
                                 }
 
@@ -166,6 +176,13 @@ public class LoginActivity extends AppCompatActivity {
                                 conditionRef.addValueEventListener(new ValueEventListener() {
                                     @Override
                                     public void onDataChange(DataSnapshot dataSnapshot) {
+                                        String disabled = dataSnapshot.child("Disabled").getValue(String.class);
+                                        if (disabled.equals("true")) {
+                                            View focusView = email;
+                                            email.setError("User is Banned");
+                                            FirebaseAuth.getInstance().signOut();
+                                            return;
+                                        }
                                         String userType = dataSnapshot.child("User Type").getValue(String.class);
                                         if(userType.equals("Admin")){
                                             Intent intentUser = new Intent(LoginActivity.this, AdminActivity.class);
@@ -208,16 +225,63 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     /**
-     * Method for getting all the shelter info from the FireBase DB and adding it to the local model.
+     * Method that gets fired when Forgot Password button is pressed.
+     * @param view the current view
+     */
+    public void passwordReset(View view) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this);
+        builder.setTitle("Enter Email");
+        builder.setMessage("Please enter the email you used to register for an account in order to receive a password reset email.");
+
+        // Set up the input
+        final EditText input = new EditText(LoginActivity.this);
+        // Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
+        input.setInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
+        builder.setView(input);
+
+        builder.setPositiveButton("Reset Password", (dialogInterface, i) -> {
+            String emailAddress = input.getText().toString();
+            if (TextUtils.isEmpty(emailAddress)) {
+                Toast.makeText(LoginActivity.this, "No email was entered. Try again.",
+                        Toast.LENGTH_LONG).show();
+            } else {
+                if (!Login.isValidEmail(emailAddress)) {
+                    Toast.makeText(LoginActivity.this, "Invalid email entered. Please enter a valid email address.",
+                            Toast.LENGTH_LONG).show();
+                } else {
+                    mAuth.sendPasswordResetEmail(emailAddress).addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            Toast.makeText(LoginActivity.this, "Password reset email sent. Please follow the instructions in the email" +
+                                            " to reset your password.",
+                                    Toast.LENGTH_LONG).show();
+                        } else {
+                            Log.d("Pass Reset", task.getException().toString());
+                            Toast.makeText(LoginActivity.this, "There is no account associated with this email. Try a different email.",
+                                    Toast.LENGTH_LONG).show();
+                        }
+                    });
+                }
+            }
+        });
+
+        builder.setNegativeButton("Cancel", (dialogInterface, i) -> {
+            //Do nothing
+        });
+
+        builder.show();
+    }
+
+    /**
+     * Method for getting all the shelter info from the FireBase DB and adding it to the local shelterModel.
      * Remember both the .csv file (for local bufferReading) and .json file (For FireBase DB) has been
      * added to the res/raw just in case. - Farzam
      */
-    private void populateShelterInfo() {
+    public void populateShelterInfo() {
         shelterDB.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot shelters : dataSnapshot.getChildren()) {
-                    model.addItem(new ShelterData(shelters.child("Unique Key").getValue(Integer.class),
+                    shelterModel.addItem(new ShelterData(shelters.child("Unique Key").getValue(Integer.class),
                             shelters.child("Shelter Name").getValue(String.class),
                             shelters.child("Capacity").getValue(String.class),
                             shelters.child("Restrictions").getValue(String.class),

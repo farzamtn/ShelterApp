@@ -7,21 +7,20 @@ import java.util.regex.Pattern;
  * Model class for LoginActivity that handles user/pass validity.
  *
  * @author Farzam
- * @version 1.0
+ * @version 1.1
  */
 public class Login {
 
-    private String username;
-    private String password;
+    /**  the one and only instance of this class for the singleton pattern */
+    public static Login INSTANCE = new Login();
 
-    public Login (String username, String password) {
-        this.username = username;
-        this.password = password;
-    }
-
-
+    /**
+     * Checks if a username is valid.
+     *
+     * @param user the String to be checked for rulles
+     * @return true if valid
+     */
     public static boolean isUsernameValid(String user) {
-        //TODO: Replace this with your own logic
         return isValidEmail(user);
     }
 
