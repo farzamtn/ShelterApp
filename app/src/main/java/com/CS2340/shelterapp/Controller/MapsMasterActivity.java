@@ -212,11 +212,7 @@ public class MapsMasterActivity extends AppCompatActivity
         if (id == R.id.nav_shelters) {
             Intent intent = new Intent(this, ShelterItemListActivity.class);
             startActivity(intent);
-        } else if (id == R.id.nav_manage) {
-
         } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
 
         } else if (id ==  R.id.nav_signout) {
             /*  Prompt the user to sign out
