@@ -31,7 +31,7 @@ import com.google.firebase.database.ValueEventListener;
  * Admin Activity page that will contain the tasks an admin can do
  *
  * @author chandler
- * @version 1.1
+ * @version 1.2
  */
 public class AdminActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -120,11 +120,7 @@ public class AdminActivity extends AppCompatActivity
         } else if (id == R.id.nav_map) {
             Intent intent = new Intent(this, MapsMasterActivity.class);
             startActivity(intent);
-        } else if (id == R.id.nav_manage) {
-
         } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
 
         } else if (id ==  R.id.nav_signout) {
             /*  Prompt the user to sign out
@@ -155,6 +151,11 @@ public class AdminActivity extends AppCompatActivity
         return true;
     }
 
+    /**
+     * banUser method that will get fired when admin clicks on the Ban/Unban button.
+     *
+     * @param view the current view
+     */
     public void banUser(View view) {
         View focusView = null;
 
