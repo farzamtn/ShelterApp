@@ -52,13 +52,13 @@ public class Login {
         boolean symbol = false;
         for (int i = 0; i < pass.length(); i++) {
             char c = pass.charAt(i);
-            if (c >= 65 && c <= 90) {
+            if ((c >= 65) && (c <= 90)) {
                 upper = true;
-            } else if (c >= 97 && c <= 122) {
+            } else if ((c >= 97) && (c <= 122)) {
                 lower = true;
-            } else if (c >= 48 && c <= 57) {
+            } else if ((c >= 48) && (c <= 57)) {
                 number = true;
-            } else if (c >= 33 && c <= 126) {
+            } else if ((c >= 33) && (c <= 126)) {
                 symbol = true;
             }
         }

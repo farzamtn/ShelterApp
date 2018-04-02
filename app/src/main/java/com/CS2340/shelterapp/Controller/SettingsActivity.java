@@ -13,6 +13,8 @@ import android.widget.Toast;
 import com.CS2340.shelterapp.R;
 import com.google.firebase.auth.FirebaseAuth;
 
+import java.util.Objects;
+
 /**
  * @author Farzam
  * @version 1.0
@@ -32,7 +34,7 @@ public class SettingsActivity extends AppCompatActivity {
         fab.setOnClickListener(view -> Snackbar.make(view, "Replace with your own action",
                 Snackbar.LENGTH_LONG)
                 .setAction("Action", null).show());
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
 
         Button resendVerificationEmail = findViewById(R.id.resendVerificationEmailBtn);
 

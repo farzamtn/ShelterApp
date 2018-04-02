@@ -3,6 +3,7 @@ package com.CS2340.shelterapp.Controller;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
@@ -40,7 +41,6 @@ public class AdminActivity extends AppCompatActivity
     private DatabaseReference usersDatabase;
 
     private EditText emailBox;
-    private Button ban;
     private String email;
     private String disabled;
     private DatabaseReference user;
@@ -55,7 +55,7 @@ public class AdminActivity extends AppCompatActivity
         usersDatabase = FirebaseDatabase.getInstance().getReference().child("Users");
 
         emailBox = findViewById(R.id.emailInput);
-        ban = findViewById(R.id.ban);
+        Button ban = findViewById(R.id.ban);
         email = emailBox.getText().toString();
 
         FloatingActionButton fab = findViewById(R.id.fab);
@@ -108,7 +108,7 @@ public class AdminActivity extends AppCompatActivity
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
@@ -170,7 +170,7 @@ public class AdminActivity extends AppCompatActivity
             this.emailBox.setError(getString(R.string.error_field_required));
             focusView = emailBox;
             cancel = true;
-        } else if (!Login.isUsernameValid(email)) {
+        } else if (Login.isUsernameValid(email)) {
             emailBox.setError(getString(R.string.error_invalid_email));
             focusView = emailBox;
             cancel = true;
@@ -180,14 +180,14 @@ public class AdminActivity extends AppCompatActivity
             // There was an error; don't attempt registration and ask for focus.
             focusView.requestFocus();
         } else {
-            getUser(focusView);
+            getUser(null);
         }
     }
 
-    private void banUserAttempt(View focusView) {
+    private void banUserAttempt() {
         if (user == null) {
             emailBox.setError("Email not in database");
-            focusView = emailBox;
+            View focusView = emailBox;
             focusView.requestFocus();
             return;
         }
@@ -209,12 +209,13 @@ public class AdminActivity extends AppCompatActivity
                 for (DataSnapshot ds : dataSnapshot.getChildren()) {
                     String userEmail = ds.child("Email").getValue(String.class);
 
+                    assert userEmail != null;
                     if (userEmail.equals(email)) {
                         user = ds.getRef();
                         disabled = ds.child("Disabled").getValue(String.class);
                     }
                 }
-                banUserAttempt(focusView);
+                banUserAttempt();
             }
 
             @Override

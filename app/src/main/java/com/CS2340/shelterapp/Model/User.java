@@ -49,6 +49,7 @@ public class User {
     public static void updateDBUserCheckedIn(int newCheckedIn) {
         DatabaseReference userDB = FirebaseDatabase.getInstance().getReference().child("Users");
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        assert currentUser != null;
         DatabaseReference userRef = userDB.child(currentUser.getUid());
 
         userRef.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -70,6 +71,7 @@ public class User {
     public static void updateDBUserBeds(int newBeds) {
         DatabaseReference userDB = FirebaseDatabase.getInstance().getReference().child("Users");
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        assert currentUser != null;
         DatabaseReference userRef = userDB.child(currentUser.getUid());
 
         userRef.addListenerForSingleValueEvent(new ValueEventListener() {

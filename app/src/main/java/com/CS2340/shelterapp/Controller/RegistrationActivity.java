@@ -21,6 +21,8 @@ import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.util.Objects;
+
 /**
  * A registration screen that offers Shelter App registration.
  *
@@ -110,7 +112,7 @@ public class RegistrationActivity extends AppCompatActivity {
             this.email.setError(getString(R.string.error_field_required));
             focusView = email;
             cancel = true;
-        } else if (!Login.isUsernameValid(user)) {
+        } else if (Login.isUsernameValid(user)) {
             email.setError(getString(R.string.error_invalid_email));
             focusView = email;
             cancel = true;
@@ -157,7 +159,7 @@ public class RegistrationActivity extends AppCompatActivity {
                                         .addOnCompleteListener(task1 -> {
                                     if (!task1.isSuccessful()) {
                                         Log.d("Update profile error",
-                                                task.getException().toString());
+                                                Objects.requireNonNull(task.getException()).toString());
                                     }
                                 });
 
@@ -166,7 +168,7 @@ public class RegistrationActivity extends AppCompatActivity {
                                         .addOnCompleteListener(task12 -> {
                                    if (!task.isSuccessful()) {
                                       Log.d("Update Email error",
-                                              task.getException().toString());
+                                              Objects.requireNonNull(task.getException()).toString());
                                    }
                                 });
 

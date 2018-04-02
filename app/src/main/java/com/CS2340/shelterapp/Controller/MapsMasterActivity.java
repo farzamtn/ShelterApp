@@ -211,7 +211,7 @@ public class MapsMasterActivity extends AppCompatActivity
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
@@ -400,6 +400,7 @@ public class MapsMasterActivity extends AppCompatActivity
         //instantiate the maps_master_popup.xml layout file
         LayoutInflater layoutInflater = (LayoutInflater) MapsMasterActivity.this
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        assert layoutInflater != null;
         View customView = layoutInflater.inflate(R.layout.maps_master_popup,null);
 
         men_checkbox = customView.findViewById(R.id.men_checkbox);
@@ -409,7 +410,7 @@ public class MapsMasterActivity extends AppCompatActivity
         families_checkbox = customView.findViewById(R.id.families_checkbox);
         veterans_checkbox = customView.findViewById(R.id.veterans_checkbox);
         Button closePopupBtn = customView.findViewById(R.id.closePopupBtn);
-        Button resetBtn = customView.findViewById(R.id.resetBtn);
+        Button resetBtn = (Button) customView.findViewById(R.id.resetBtn);
 
         //Retrieving saved instances of checkedboxes
         SharedPreferences sp = getSharedPreferences("Men Check Boxes", MODE_PRIVATE);
@@ -429,7 +430,7 @@ public class MapsMasterActivity extends AppCompatActivity
         popupWindow.setOutsideTouchable(false);
         popupWindow.setFocusable(true);
 
-        CoordinatorLayout c = findViewById(R.id.coordinatorLayout);
+        CoordinatorLayout c = (CoordinatorLayout) findViewById(R.id.coordinatorLayout);
         //display the popup window
         popupWindow.showAtLocation(c, Gravity.CENTER, 0, 0);
 
@@ -474,6 +475,7 @@ public class MapsMasterActivity extends AppCompatActivity
                     ShelterData s = model.findItemByName(m.getTitle());
 
                     //Displaying shelters with no restrictions for all filters
+                    assert s != null;
                     if ("anyone".equals(s.getRestrictions().trim().toLowerCase())
                             || "no restrictions".equals(s.getRestrictions().toLowerCase())) {
                         m.setVisible(true);
