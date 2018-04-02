@@ -110,7 +110,7 @@ public class LoginActivity extends AppCompatActivity {
             password.setError(getString(R.string.error_field_required));
             focusView = password;
             cancel = true;
-        } else if (!Login.isPasswordValid(pass)) {
+        } else if (Login.isPasswordValid(pass)) {
             password.setError(getString(R.string.error_minimum_password));
             focusView = password;
             cancel = true;
