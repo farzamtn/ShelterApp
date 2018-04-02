@@ -9,7 +9,6 @@ import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.CoordinatorLayout;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -42,12 +41,11 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DatabaseReference;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Main activity page with the main GoogleMap
@@ -61,13 +59,12 @@ public class MapsMasterActivity extends AppCompatActivity
 
     private static final String TAG = MapsMasterActivity.class.getSimpleName();
     private Shelters model;
-    private DatabaseReference shelterDB;
 
     private FirebaseAuth mAuth;
 
     private GoogleMap mMap;
-    private CameraPosition mCameraPosition;
-    private ArrayList<Marker> markers; //For later filtering of markers
+    private CameraPosition mCameraPosition; //it has to be private and here even though it says can be converted to local
+    private List<Marker> markers; //For later filtering of markers
 
     // The entry point to the Fused Location Provider.
     private FusedLocationProviderClient mFusedLocationProviderClient;
@@ -88,7 +85,12 @@ public class MapsMasterActivity extends AppCompatActivity
     private static final String KEY_LOCATION = "location";
 
     private PopupWindow popupWindow;
-    private CheckBox men_checkbox, women_checkbox, youngAdult_checkbox, children_checkbox, families_checkbox, veterans_checkbox;
+    private CheckBox men_checkbox;
+    private CheckBox women_checkbox;
+    private CheckBox youngAdult_checkbox;
+    private CheckBox children_checkbox;
+    private CheckBox families_checkbox;
+    private CheckBox veterans_checkbox;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -118,8 +120,6 @@ public class MapsMasterActivity extends AppCompatActivity
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -261,7 +261,7 @@ public class MapsMasterActivity extends AppCompatActivity
             markers.add(m); //For later use in filtering markers
         }
 
-        /** Starting the respective Detail page about this shelter using the key - Farzam */
+        // Starting the respective Detail page about this shelter using the key - Farzam
         mMap.setOnInfoWindowClickListener(marker -> {
             Intent intent = new Intent(getBaseContext(), ShelterItemDetailActivity.class);
             intent.putExtra(ShelterItemDetailFragment.ARG_ITEM_ID, model.findItemByName(marker.getTitle()).getKey());
@@ -310,8 +310,8 @@ public class MapsMasterActivity extends AppCompatActivity
         switch (requestCode) {
             case PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION: {
                 // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                if ((grantResults.length > 0)
+                        && (grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
                     mLocationPermissionGranted = true;
                 }
             }
@@ -352,26 +352,23 @@ public class MapsMasterActivity extends AppCompatActivity
         try {
             if (mLocationPermissionGranted) {
                 Task<Location> locationResult = mFusedLocationProviderClient.getLastLocation();
-                locationResult.addOnCompleteListener(this, new OnCompleteListener<Location>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Location> task) {
-                        if (task.isSuccessful()) {
-                            // Set the map's camera position to the current location of the device.
-                            mLastKnownLocation = task.getResult();
-                            if (mLastKnownLocation != null) {
-                                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
-                                        new LatLng(mLastKnownLocation.getLatitude(),
-                                                mLastKnownLocation.getLongitude()), DEFAULT_ZOOM));
-                            } else {
-                                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mDefaultLocation, DEFAULT_ZOOM));
-                            }
+                locationResult.addOnCompleteListener(this, task -> {
+                    if (task.isSuccessful()) {
+                        // Set the map's camera position to the current location of the device.
+                        mLastKnownLocation = task.getResult();
+                        if (mLastKnownLocation != null) {
+                            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
+                                    new LatLng(mLastKnownLocation.getLatitude(),
+                                            mLastKnownLocation.getLongitude()), DEFAULT_ZOOM));
                         } else {
-                            Log.d(TAG, "Current location is null. Using defaults.");
-                            Log.e(TAG, "Exception: %s", task.getException());
-                            mMap.moveCamera(CameraUpdateFactory
-                                    .newLatLngZoom(mDefaultLocation, DEFAULT_ZOOM));
-                            mMap.getUiSettings().setMyLocationButtonEnabled(false);
+                            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mDefaultLocation, DEFAULT_ZOOM));
                         }
+                    } else {
+                        Log.d(TAG, "Current location is null. Using defaults.");
+                        Log.e(TAG, "Exception: %s", task.getException());
+                        mMap.moveCamera(CameraUpdateFactory
+                                .newLatLngZoom(mDefaultLocation, DEFAULT_ZOOM));
+                        mMap.getUiSettings().setMyLocationButtonEnabled(false);
                     }
                 });
             }
@@ -382,6 +379,8 @@ public class MapsMasterActivity extends AppCompatActivity
 
     /**
      * Event handler for FAB which filters the pins displyed on the map. - Farzam
+     *
+     * @param view the curent view
      */
     public void newPopup(View view) {
         //instantiate the maps_master_popup.xml layout file
@@ -458,13 +457,13 @@ public class MapsMasterActivity extends AppCompatActivity
                     ShelterData s = model.findItemByName(m.getTitle());
 
                     //Displaying shelters with no restrictions for all filters
-                    if (s.getRestrictions().trim().toLowerCase().equals("anyone")
-                            || s.getRestrictions().toLowerCase().equals("no restrictions")) {
+                    if ("anyone".equals(s.getRestrictions().trim().toLowerCase())
+                            || "no restrictions".equals(s.getRestrictions().toLowerCase())) {
                         m.setVisible(true);
                     }
 
                     if (men_checkbox.isChecked()) {
-                        if (s.getRestrictions().trim().toLowerCase().equals("men")) {
+                        if ("men".equals(s.getRestrictions().trim().toLowerCase())) {
                             m.setVisible(true);
                         }
                     }
@@ -476,7 +475,7 @@ public class MapsMasterActivity extends AppCompatActivity
                     }
 
                     if (youngAdult_checkbox.isChecked()) {
-                        if (s.getRestrictions().toLowerCase().equals("young adults")) {
+                        if ("young adults".equals(s.getRestrictions().toLowerCase())) {
                             m.setVisible(true);
                         }
                     }
@@ -494,7 +493,7 @@ public class MapsMasterActivity extends AppCompatActivity
                     }
 
                     if (veterans_checkbox.isChecked()) {
-                        if (s.getRestrictions().trim().toLowerCase().equals("veterans")) {
+                        if ("veterans".equals(s.getRestrictions().trim().toLowerCase())) {
                             m.setVisible(true);
                         }
                     }

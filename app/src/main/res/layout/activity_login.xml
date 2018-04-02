@@ -39,7 +39,8 @@
                 android:id="@+id/gt_logo_login"
                 android:layout_width="match_parent"
                 android:layout_height="157dp"
-                app:srcCompat="@drawable/gt_full_logo" />
+                app:srcCompat="@drawable/gt_full_logo"
+                android:contentDescription="GT Logo" />
 
             <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"

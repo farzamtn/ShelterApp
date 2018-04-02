@@ -3,7 +3,6 @@ package com.CS2340.shelterapp.Controller;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
 import android.text.TextUtils;
@@ -17,9 +16,6 @@ import com.CS2340.shelterapp.Model.Login;
 import com.CS2340.shelterapp.Model.ShelterData;
 import com.CS2340.shelterapp.Model.Shelters;
 import com.CS2340.shelterapp.R;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -39,29 +35,23 @@ public class LoginActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private DatabaseReference mLoginDatabase;
     private DatabaseReference conditionRef;
+//    private DatabaseReference lockoutRef;
 
     private DatabaseReference shelterDB;
 
     private Shelters shelterModel;
 
-    private Login loginModel;
 
     // UI references.
     private EditText email;
     private EditText password;
-    private Button signInButton;
-    private Button registerButton;
-    private Button resetPassword_button;
     private View progressBar;
-    private View LoginFormView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         setTheme(R.style.AppTheme); //For splash screen - Farzam
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-
-        loginModel = Login.INSTANCE;
 
         //Get Firebase auth instance
         mAuth = FirebaseAuth.getInstance();
@@ -78,7 +68,7 @@ public class LoginActivity extends AppCompatActivity {
             //Populating shelter shelterModel class after successful login attempt
             //TODO: Farzam: Check if the number of children in Shelters DB changes and clear shelterModel list and add shelters to shelterModel again
             //following TODO: Tried getting ChildrenCount from dataSnapShot and comparing it with getItems().size() but it returns 0 everytime
-            if (shelterModel.getItems().size() == 0) {
+            if (shelterModel.getItems().isEmpty()) {
                 populateShelterInfo();
             }
 
@@ -89,11 +79,11 @@ public class LoginActivity extends AppCompatActivity {
         // Set up the login form.
         email = (EditText) findViewById(R.id.username);
         password = (EditText) findViewById(R.id.password);
-        signInButton = (Button) findViewById(R.id.sign_in_button);
-        registerButton = (Button) findViewById(R.id.register_button);
-        resetPassword_button = (Button) findViewById(R.id.resetPassword_button);
+        Button signInButton = (Button) findViewById(R.id.sign_in_button);
+        Button registerButton = (Button) findViewById(R.id.register_button);
+        Button resetPassword_button = (Button) findViewById(R.id.resetPassword_button);
         progressBar = findViewById(R.id.login_progress);
-        LoginFormView = findViewById(R.id.login_form);
+        View loginFormView = findViewById(R.id.login_form);
     }
 
     /**
@@ -148,72 +138,89 @@ public class LoginActivity extends AppCompatActivity {
 
             //authenticate user
             mAuth.signInWithEmailAndPassword(user, pass)
-                    .addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
-                        @Override
-                        public void onComplete(@NonNull Task<AuthResult> task) {
-                            // If sign in fails, display a message to the user. If sign in succeeds
-                            // the auth state listener will be notified and logic to handle the
-                            // signed in user can be handled in the listener.
-                            progressBar.setVisibility(View.GONE);
+                    .addOnCompleteListener(LoginActivity.this, task -> {
+                        // If sign in fails, display a message to the user. If sign in succeeds
+                        // the auth state listener will be notified and logic to handle the
+                        // signed in user can be handled in the listener.
+                        progressBar.setVisibility(View.GONE);
 
-                            if (!task.isSuccessful()) {
-                                Log.d("Firebase Auth error: ", task.getException().toString());
-                                // there was an error
-                                Toast.makeText(LoginActivity.this, getString(R.string.auth_failed), Toast.LENGTH_LONG).show();
-                            } else {
-                                //Populating shelter shelterModel class after successful login attempt
-                                //TODO: Farzam: Check if the number of children in Shelters DB changes and clear shelterModel list and add shelters to shelterModel again
-                                //following TODO: Tried getting ChildrenCount from dataSnapShot and comparing it with getItems().size() but it returns 0 everytime
-                                if (shelterModel.getItems().size() == 0) {
-                                    populateShelterInfo();
+                        if (!task.isSuccessful()) {
+//                            try {
+//                                throw task.getException();
+//                            } catch (FirebaseAuthInvalidCredentialsException existEmail) { // For lockout after 3 incorrect attempts
+//                                lockoutRef = mLoginDatabase.child("Users");
+//                                Query queryEmail = lockoutRef.orderByChild("Email").equalTo(user);
+//                                queryEmail.addValueEventListener(new ValueEventListener() {
+//                                    @Override
+//                                    public void onDataChange(DataSnapshot dataSnapshot) {
+//                                        Toast.makeText(LoginActivity.this, queryEmail.toString(), Toast.LENGTH_LONG).show();
+//                                        Log.d("QUERY : ", dataSnapshot.toString());
+//                                    }
+//
+//                                    @Override
+//                                    public void onCancelled(DatabaseError databaseError) {
+//
+//                                    }
+//                                });
+//                            } catch (Exception e) {
+//                                e.printStackTrace();
+//                            }
+                            Log.d("Firebase Auth error: ", task.getException().toString());
+                            // there was an error
+                            Toast.makeText(LoginActivity.this, getString(R.string.auth_failed), Toast.LENGTH_LONG).show();
+                        } else {
+                            //Populating shelter shelterModel class after successful login attempt
+                            //TODO: Farzam: Check if the number of children in Shelters DB changes and clear shelterModel list and add shelters to shelterModel again
+                            //following TODO: Tried getting ChildrenCount from dataSnapShot and comparing it with getItems().size() but it returns 0 everytime
+                            if (shelterModel.getItems().isEmpty()) {
+                                populateShelterInfo();
+                            }
+
+                            //Getting the correct type of user based on their login info
+                            FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+                            String RegisteredUserID = currentUser.getUid();
+                            conditionRef = mLoginDatabase.child("Users").child(RegisteredUserID);
+
+                            conditionRef.addValueEventListener(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(DataSnapshot dataSnapshot) {
+                                    String disabled = dataSnapshot.child("Disabled").getValue(String.class);
+
+                                    if ("true".equals(disabled)) {
+                                        View focusView1 = email;
+                                        email.setError("User is Banned");
+                                        Toast.makeText(LoginActivity.this, "This account has been banned. Please contact the administrator.",
+                                                Toast.LENGTH_LONG).show();
+                                        FirebaseAuth.getInstance().signOut();
+                                        return;
+                                    }
+
+                                    String userType = dataSnapshot.child("User Type").getValue(String.class);
+                                    if("Admin".equals(userType)){
+                                        Intent intentUser = new Intent(LoginActivity.this, AdminActivity.class);
+                                        intentUser.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                        startActivity(intentUser);
+                                        finish();
+                                    } else if ("Shelter Employee".equals(userType)) {
+                                        Intent intentUser = new Intent(LoginActivity.this, MapsMasterActivity.class);
+                                        intentUser.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                        startActivity(intentUser);
+                                        finish();
+                                    } else if ("Shelter Seeker".equals(userType)) {
+                                        Intent intentUser = new Intent(LoginActivity.this, MapsMasterActivity.class);
+                                        intentUser.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                        startActivity(intentUser);
+                                        finish();
+                                    } else {
+                                        Toast.makeText(LoginActivity.this, "Failed Login. Please Try Again", Toast.LENGTH_SHORT).show();
+                                    }
                                 }
 
-                                //Getting the correct type of user based on their login info
-                                FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
-                                String RegisteredUserID = currentUser.getUid();
-                                conditionRef = mLoginDatabase.child("Users").child(RegisteredUserID);
-
-                                conditionRef.addValueEventListener(new ValueEventListener() {
-                                    @Override
-                                    public void onDataChange(DataSnapshot dataSnapshot) {
-                                        String disabled = dataSnapshot.child("Disabled").getValue(String.class);
-
-                                        if (disabled.equals("true")) {
-                                            View focusView = email;
-                                            email.setError("User is Banned");
-                                            Toast.makeText(LoginActivity.this, "This account has been banned. Please contact the administrator.",
-                                                    Toast.LENGTH_LONG).show();
-                                            FirebaseAuth.getInstance().signOut();
-                                            return;
-                                        }
-
-                                        String userType = dataSnapshot.child("User Type").getValue(String.class);
-                                        if(userType.equals("Admin")){
-                                            Intent intentUser = new Intent(LoginActivity.this, AdminActivity.class);
-                                            intentUser.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                            startActivity(intentUser);
-                                            finish();
-                                        } else if (userType.equals("Shelter Employee")) {
-                                            Intent intentUser = new Intent(LoginActivity.this, MapsMasterActivity.class);
-                                            intentUser.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                            startActivity(intentUser);
-                                            finish();
-                                        } else if (userType.equals("Shelter Seeker")) {
-                                            Intent intentUser = new Intent(LoginActivity.this, MapsMasterActivity.class);
-                                            intentUser.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                            startActivity(intentUser);
-                                            finish();
-                                        } else {
-                                            Toast.makeText(LoginActivity.this, "Failed Login. Please Try Again", Toast.LENGTH_SHORT).show();
-                                        }
-                                    }
-
-                                    @Override
-                                    public void onCancelled(DatabaseError databaseError) {
-                                        Log.d("User DB Error (login)", databaseError.getMessage());
-                                    }
-                                });
-                            }
+                                @Override
+                                public void onCancelled(DatabaseError databaseError) {
+                                    Log.d("User DB Error (login)", databaseError.getMessage());
+                                }
+                            });
                         }
                     });
         }
@@ -280,7 +287,7 @@ public class LoginActivity extends AppCompatActivity {
      * Remember both the .csv file (for local bufferReading) and .json file (For FireBase DB) has been
      * added to the res/raw just in case. - Farzam
      */
-    public void populateShelterInfo() {
+    private void populateShelterInfo() {
         shelterDB.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
