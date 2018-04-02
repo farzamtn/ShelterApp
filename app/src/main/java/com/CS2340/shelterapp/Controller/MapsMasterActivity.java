@@ -63,7 +63,9 @@ public class MapsMasterActivity extends AppCompatActivity
     private FirebaseAuth mAuth;
 
     private GoogleMap mMap;
-    private CameraPosition mCameraPosition; //it has to be private and here even though it says can be converted to local
+
+    //it has to be private and here even though it says can be converted to local
+    private CameraPosition mCameraPosition;
     private List<Marker> markers; //For later filtering of markers
 
     // The entry point to the Fused Location Provider.
@@ -118,16 +120,17 @@ public class MapsMasterActivity extends AppCompatActivity
             mLastKnownLocation = GT_location;
         }
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+                this, drawer, toolbar, R.string.navigation_drawer_open,
+                R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
         model = Shelters.INSTANCE;
@@ -147,8 +150,11 @@ public class MapsMasterActivity extends AppCompatActivity
         //Letting the user know they need to verify they email if they haven't already done so
         if (!mAuth.getCurrentUser().isEmailVerified()) {
             AlertDialog.Builder builder = new AlertDialog.Builder(MapsMasterActivity.this);
-            builder.setMessage("For later email/password recovery and changes to your account you need to verify your email. Please" +
-                    " check your email and follow the instructions as soon as possible. If you did not get any email, please go to settings and resend the verification email.");
+            builder.setMessage("For later email/password recovery and changes " +
+                    "to your account you need to verify your email. Please" +
+                    " check your email and follow the instructions as soon as possible. " +
+                    "If you did not get any email, please go to settings and resend the " +
+                    "verification email.");
 
             builder.setNeutralButton("OK", (dialog, which) -> {
                 //Do nothing
@@ -172,7 +178,7 @@ public class MapsMasterActivity extends AppCompatActivity
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
@@ -209,32 +215,37 @@ public class MapsMasterActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_shelters) {
-            Intent intent = new Intent(this, ShelterItemListActivity.class);
-            startActivity(intent);
-        } else if (id == R.id.nav_share) {
+        switch (id) {
+            case R.id.nav_shelters:
+                Intent intent = new Intent(this, ShelterItemListActivity.class);
+                startActivity(intent);
+                break;
+            case R.id.nav_share:
 
-        } else if (id ==  R.id.nav_signout) {
+                break;
+            case R.id.nav_signout:
             /*  Prompt the user to sign out
                 If yes, clear cache and go back to the login screen. - Farzam
              */
-            AlertDialog.Builder builder = new AlertDialog.Builder(MapsMasterActivity.this);
-            builder.setMessage("Are you sure you want to sign out?");
+                AlertDialog.Builder builder = new AlertDialog.Builder(
+                        MapsMasterActivity.this);
+                builder.setMessage("Are you sure you want to sign out?");
 
-            builder.setPositiveButton("YES", (dialog, which) -> {
-                FirebaseAuth.getInstance().signOut(); //Ending FireBase session for this user
-                Intent intent = new Intent(getBaseContext(), LoginActivity.class);
-                startActivity(intent);
-                finish();
-            });
+                builder.setPositiveButton("YES", (dialog, which) -> {
+                    FirebaseAuth.getInstance().signOut(); //Ending FireBase session for this user
+                    Intent intent1 = new Intent(getBaseContext(), LoginActivity.class);
+                    startActivity(intent1);
+                    finish();
+                });
 
-            builder.setNegativeButton("NO", (dialog, which) -> {
-                //Do nothing
-            });
-            builder.show();
+                builder.setNegativeButton("NO", (dialog, which) -> {
+                    //Do nothing
+                });
+                builder.show();
+                break;
         }
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
@@ -257,14 +268,16 @@ public class MapsMasterActivity extends AppCompatActivity
 
             LatLng shelterLocation = new LatLng(shelterLatitude, shelterLongitude);
 
-            Marker m = mMap.addMarker(new MarkerOptions().position(shelterLocation).title(shelterName).snippet(shelterPhoneNumber));
+            Marker m = mMap.addMarker(new MarkerOptions().position(shelterLocation)
+                    .title(shelterName).snippet(shelterPhoneNumber));
             markers.add(m); //For later use in filtering markers
         }
 
         // Starting the respective Detail page about this shelter using the key - Farzam
         mMap.setOnInfoWindowClickListener(marker -> {
             Intent intent = new Intent(getBaseContext(), ShelterItemDetailActivity.class);
-            intent.putExtra(ShelterItemDetailFragment.ARG_ITEM_ID, model.findItemByName(marker.getTitle()).getKey());
+            intent.putExtra(ShelterItemDetailFragment.ARG_ITEM_ID, model
+                    .findItemByName(marker.getTitle()).getKey());
             startActivity(intent);
         });
 
@@ -361,7 +374,8 @@ public class MapsMasterActivity extends AppCompatActivity
                                     new LatLng(mLastKnownLocation.getLatitude(),
                                             mLastKnownLocation.getLongitude()), DEFAULT_ZOOM));
                         } else {
-                            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mDefaultLocation, DEFAULT_ZOOM));
+                            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mDefaultLocation,
+                                    DEFAULT_ZOOM));
                         }
                     } else {
                         Log.d(TAG, "Current location is null. Using defaults.");
@@ -378,23 +392,24 @@ public class MapsMasterActivity extends AppCompatActivity
     }
 
     /**
-     * Event handler for FAB which filters the pins displyed on the map. - Farzam
+     * Event handler for FAB which filters the pins displayed on the map. - Farzam
      *
-     * @param view the curent view
+     * @param view the current view
      */
     public void newPopup(View view) {
         //instantiate the maps_master_popup.xml layout file
-        LayoutInflater layoutInflater = (LayoutInflater) MapsMasterActivity.this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        LayoutInflater layoutInflater = (LayoutInflater) MapsMasterActivity.this
+                .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View customView = layoutInflater.inflate(R.layout.maps_master_popup,null);
 
-        men_checkbox = (CheckBox) customView.findViewById(R.id.men_checkbox);
-        women_checkbox = (CheckBox) customView.findViewById(R.id.women_checkbox);
-        youngAdult_checkbox = (CheckBox) customView.findViewById(R.id.youngAdult_checkbox);
-        children_checkbox = (CheckBox) customView.findViewById(R.id.children_checkbox);
-        families_checkbox = (CheckBox) customView.findViewById(R.id.families_checkbox);
-        veterans_checkbox = (CheckBox) customView.findViewById(R.id.veterans_checkbox);
-        Button closePopupBtn = (Button) customView.findViewById(R.id.closePopupBtn);
-        Button resetBtn = (Button) customView.findViewById(R.id.resetBtn);
+        men_checkbox = customView.findViewById(R.id.men_checkbox);
+        women_checkbox = customView.findViewById(R.id.women_checkbox);
+        youngAdult_checkbox = customView.findViewById(R.id.youngAdult_checkbox);
+        children_checkbox = customView.findViewById(R.id.children_checkbox);
+        families_checkbox = customView.findViewById(R.id.families_checkbox);
+        veterans_checkbox = customView.findViewById(R.id.veterans_checkbox);
+        Button closePopupBtn = customView.findViewById(R.id.closePopupBtn);
+        Button resetBtn = customView.findViewById(R.id.resetBtn);
 
         //Retrieving saved instances of checkedboxes
         SharedPreferences sp = getSharedPreferences("Men Check Boxes", MODE_PRIVATE);
@@ -409,11 +424,12 @@ public class MapsMasterActivity extends AppCompatActivity
 
 
         //instantiate popup window
-        popupWindow = new PopupWindow(customView, LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        popupWindow = new PopupWindow(customView, LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT);
         popupWindow.setOutsideTouchable(false);
         popupWindow.setFocusable(true);
 
-        CoordinatorLayout c = (CoordinatorLayout) findViewById(R.id.coordinatorLayout);
+        CoordinatorLayout c = findViewById(R.id.coordinatorLayout);
         //display the popup window
         popupWindow.showAtLocation(c, Gravity.CENTER, 0, 0);
 
@@ -448,8 +464,9 @@ public class MapsMasterActivity extends AppCompatActivity
                 }
             }
 
-            //Making sure at leats one filter is selected
-            if (men_checkbox.isChecked() || women_checkbox.isChecked() || youngAdult_checkbox.isChecked()
+            //Making sure at least one filter is selected
+            if (men_checkbox.isChecked() || women_checkbox.isChecked() || youngAdult_checkbox
+                    .isChecked()
                     || children_checkbox.isChecked()
                     || families_checkbox.isChecked() || veterans_checkbox.isChecked()) {
                 for (Marker m : markers) {

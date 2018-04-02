@@ -25,15 +25,16 @@ public class SettingsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(view -> Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+        FloatingActionButton fab = findViewById(R.id.fab);
+        fab.setOnClickListener(view -> Snackbar.make(view, "Replace with your own action",
+                Snackbar.LENGTH_LONG)
                 .setAction("Action", null).show());
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        Button resendVerificationEmail = (Button) findViewById(R.id.resendVerificationEmailBtn);
+        Button resendVerificationEmail = findViewById(R.id.resendVerificationEmailBtn);
 
         //Get Firebase auth instance
         mAuth = FirebaseAuth.getInstance();
@@ -60,10 +61,13 @@ public class SettingsActivity extends AppCompatActivity {
                 mAuth.getCurrentUser().sendEmailVerification().addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         Log.d("Verification Email:", "Email sent.");
-                        Toast.makeText(SettingsActivity.this, "Verification email has been sent again. Please check your email.",
+                        Toast.makeText(SettingsActivity.this, "Verification email has " +
+                                        "been sent again. Please check your email.",
                                 Toast.LENGTH_LONG).show();
                     } else {
-                        Toast.makeText(SettingsActivity.this, "Cannot send verification email. Please try again later." + task.getException(),
+                        Toast.makeText(SettingsActivity.this, "Cannot send " +
+                                        "verification email. Please try again later."
+                                        + task.getException(),
                                 Toast.LENGTH_LONG).show();
                     }
                 });
