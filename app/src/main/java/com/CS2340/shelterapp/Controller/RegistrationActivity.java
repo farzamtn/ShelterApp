@@ -159,7 +159,8 @@ public class RegistrationActivity extends AppCompatActivity {
                                         .addOnCompleteListener(task1 -> {
                                     if (!task1.isSuccessful()) {
                                         Log.d("Update profile error",
-                                                Objects.requireNonNull(task.getException()).toString());
+                                                Objects.requireNonNull(task.getException())
+                                                        .toString());
                                     }
                                 });
 
@@ -168,7 +169,8 @@ public class RegistrationActivity extends AppCompatActivity {
                                         .addOnCompleteListener(task12 -> {
                                    if (!task.isSuccessful()) {
                                       Log.d("Update Email error",
-                                              Objects.requireNonNull(task.getException()).toString());
+                                              Objects.requireNonNull(task.getException())
+                                                      .toString());
                                    }
                                 });
 

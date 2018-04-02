@@ -180,7 +180,7 @@ public class AdminActivity extends AppCompatActivity
             // There was an error; don't attempt registration and ask for focus.
             focusView.requestFocus();
         } else {
-            getUser(null);
+            getUser();
         }
     }
 
@@ -202,7 +202,7 @@ public class AdminActivity extends AppCompatActivity
         }
     }
 
-    private void getUser(View focusView) {
+    private void getUser() {
         usersDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {

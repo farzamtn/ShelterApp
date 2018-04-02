@@ -128,11 +128,12 @@ public class ShelterItemListActivity extends AppCompatActivity {
         private final List<ShelterData> mValues;
 
         /**
-         * Recyvler view adapter for the ListView.
+         * Recycler view adapter for the ListView.
          *
          * @param items the list of ShelterData items
          */
         SimpleItemRecyclerViewAdapter(List<ShelterData> items) {
+            //noinspection AssignmentOrReturnOfFieldWithMutableType
             mValues = items;
         }
 

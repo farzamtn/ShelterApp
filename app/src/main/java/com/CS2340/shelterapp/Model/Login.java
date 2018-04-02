@@ -18,7 +18,7 @@ public class Login {
     /**
      * Checks if a username is valid.
      *
-     * @param user the String to be checked for rulles
+     * @param user the String to be checked for rules
      * @return true if valid
      */
     public static boolean isUsernameValid(CharSequence user) {
@@ -45,24 +45,25 @@ public class Login {
      * @return true if password is valid
      */
     public static boolean isPasswordValid(CharSequence pass) {
-        boolean length = pass.length() >= 8;
-        boolean upper = false;
-        boolean lower = false;
-        boolean number = false;
-        boolean symbol = false;
-        for (int i = 0; i < pass.length(); i++) {
-            char c = pass.charAt(i);
-            if ((c >= 65) && (c <= 90)) {
-                upper = true;
-            } else if ((c >= 97) && (c <= 122)) {
-                lower = true;
-            } else if ((c >= 48) && (c <= 57)) {
-                number = true;
-            } else if ((c >= 33) && (c <= 126)) {
-                symbol = true;
-            }
-        }
-        return !length || !upper || !lower || !number || !symbol;
+//        boolean length = pass.length() >= 8;
+//        boolean upper = false;
+//        boolean lower = false;
+//        boolean number = false;
+//        boolean symbol = false;
+//        for (int i = 0; i < pass.length(); i++) {
+//            char c = pass.charAt(i);
+//            if ((c >= 65) && (c <= 90)) {
+//                upper = true;
+//            } else if ((c >= 97) && (c <= 122)) {
+//                lower = true;
+//            } else if ((c >= 48) && (c <= 57)) {
+//                number = true;
+//            } else if ((c >= 33) && (c <= 126)) {
+//                symbol = true;
+//            }
+//        }
+//        return !length || !upper || !lower || !number || !symbol;
+        return pass.length() >= 6;
     }
 
 }

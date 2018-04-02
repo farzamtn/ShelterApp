@@ -46,6 +46,7 @@ import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Main activity page with the main GoogleMap
@@ -64,7 +65,7 @@ public class MapsMasterActivity extends AppCompatActivity
 
     private GoogleMap mMap;
 
-    //it has to be private and here even though it says can be converted to local
+    //it has to be private and declared here even though it says can be converted to local
     private CameraPosition mCameraPosition;
     private List<Marker> markers; //For later filtering of markers
 
@@ -276,8 +277,8 @@ public class MapsMasterActivity extends AppCompatActivity
         // Starting the respective Detail page about this shelter using the key - Farzam
         mMap.setOnInfoWindowClickListener(marker -> {
             Intent intent = new Intent(getBaseContext(), ShelterItemDetailActivity.class);
-            intent.putExtra(ShelterItemDetailFragment.ARG_ITEM_ID, model
-                    .findItemByName(marker.getTitle()).getKey());
+            intent.putExtra(ShelterItemDetailFragment.ARG_ITEM_ID, Objects.requireNonNull(model
+                    .findItemByName(marker.getTitle())).getKey());
             startActivity(intent);
         });
 
@@ -346,7 +347,7 @@ public class MapsMasterActivity extends AppCompatActivity
             } else {
                 mMap.setMyLocationEnabled(false);
                 mMap.getUiSettings().setMyLocationButtonEnabled(false);
-                mLastKnownLocation = null;
+                mLastKnownLocation = null; //Has to be set to null for later SavedInstance
 //                getLocationPermission();
             }
         } catch (SecurityException e)  {
@@ -410,7 +411,7 @@ public class MapsMasterActivity extends AppCompatActivity
         families_checkbox = customView.findViewById(R.id.families_checkbox);
         veterans_checkbox = customView.findViewById(R.id.veterans_checkbox);
         Button closePopupBtn = customView.findViewById(R.id.closePopupBtn);
-        Button resetBtn = (Button) customView.findViewById(R.id.resetBtn);
+        Button resetBtn = customView.findViewById(R.id.resetBtn);
 
         //Retrieving saved instances of checkedboxes
         SharedPreferences sp = getSharedPreferences("Men Check Boxes", MODE_PRIVATE);
@@ -430,7 +431,7 @@ public class MapsMasterActivity extends AppCompatActivity
         popupWindow.setOutsideTouchable(false);
         popupWindow.setFocusable(true);
 
-        CoordinatorLayout c = (CoordinatorLayout) findViewById(R.id.coordinatorLayout);
+        CoordinatorLayout c = findViewById(R.id.coordinatorLayout);
         //display the popup window
         popupWindow.showAtLocation(c, Gravity.CENTER, 0, 0);
 
@@ -473,22 +474,23 @@ public class MapsMasterActivity extends AppCompatActivity
                 for (Marker m : markers) {
                     m.setVisible(false);
                     ShelterData s = model.findItemByName(m.getTitle());
+                    assert s != null;
+                    String restrictions = s.getRestrictions().trim().toLowerCase();
 
                     //Displaying shelters with no restrictions for all filters
-                    assert s != null;
-                    if ("anyone".equals(s.getRestrictions().trim().toLowerCase())
-                            || "no restrictions".equals(s.getRestrictions().toLowerCase())) {
+                    if ("anyone".equals(restrictions)
+                            || "no restrictions".equals(restrictions)) {
                         m.setVisible(true);
                     }
 
                     if (men_checkbox.isChecked()) {
-                        if ("men".equals(s.getRestrictions().trim().toLowerCase())) {
+                        if ("men".equals(restrictions)) {
                             m.setVisible(true);
                         }
                     }
 
                     if (women_checkbox.isChecked()) {
-                        if (s.getRestrictions().trim().toLowerCase().contains("women")) {
+                        if (restrictions.contains("women")) {
                             m.setVisible(true);
                         }
                     }
@@ -500,19 +502,19 @@ public class MapsMasterActivity extends AppCompatActivity
                     }
 
                     if (children_checkbox.isChecked()) {
-                        if (s.getRestrictions().trim().toLowerCase().contains("children")) {
+                        if (restrictions.contains("children")) {
                             m.setVisible(true);
                         }
                     }
 
                     if (families_checkbox.isChecked()) {
-                        if (s.getRestrictions().trim().toLowerCase().contains("famil")) {
+                        if (restrictions.contains("famil")) {
                             m.setVisible(true);
                         }
                     }
 
                     if (veterans_checkbox.isChecked()) {
-                        if ("veterans".equals(s.getRestrictions().trim().toLowerCase())) {
+                        if ("veterans".equals(restrictions)) {
                             m.setVisible(true);
                         }
                     }

@@ -74,10 +74,10 @@ public final class Shelters {
     }
 
     /**
-     * Search method for the listview.
+     * Search method for the list view.
      *
      * @param charQuery the given search query
-     * @return the mataching ShelterData
+     * @return the matching ShelterData
      */
     public List<ShelterData> findItemsByQuery(CharSequence charQuery) {
         List<ShelterData> foundShelters = new ArrayList<>();

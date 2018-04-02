@@ -107,7 +107,7 @@ public class LoginActivity extends AppCompatActivity {
             password.setError(getString(R.string.error_field_required));
             focusView = password;
             cancel = true;
-        } else if (Login.isPasswordValid(pass)) {
+        } else if (!Login.isPasswordValid(pass)) {
             password.setError(getString(R.string.error_minimum_password));
             focusView = password;
             cancel = true;
@@ -118,7 +118,7 @@ public class LoginActivity extends AppCompatActivity {
             email.setError(getString(R.string.error_field_required));
             focusView = email;
             cancel = true;
-        } else if (Login.isUsernameValid(user)) {
+        } else if (!Login.isUsernameValid(user)) {
             email.setError(getString(R.string.error_invalid_email));
             focusView = email;
             cancel = true;
@@ -162,10 +162,12 @@ public class LoginActivity extends AppCompatActivity {
 //                            } catch (Exception e) {
 //                                e.printStackTrace();
 //                            }
-                            Log.d("Firebase Auth error: ", Objects.requireNonNull(task.getException()).toString());
+                            Log.d("Firebase Auth error: ", Objects.requireNonNull(
+                                    task.getException()).toString());
                             // there was an error
                             Toast.makeText(LoginActivity.this,
-                                    getString(R.string.auth_failed), Toast.LENGTH_LONG).show();
+                                    getString(R.string.auth_failed),
+                                    Toast.LENGTH_LONG).show();
                         } else {
                             //Populating shelter shelterModel class after successful login attempt
                             if (shelterModel.getItems().isEmpty()) {
@@ -290,7 +292,8 @@ public class LoginActivity extends AppCompatActivity {
                                             " to reset your password.",
                                     Toast.LENGTH_LONG).show();
                         } else {
-                            Log.d("Pass Reset", Objects.requireNonNull(task.getException()).toString());
+                            Log.d("Pass Reset", Objects.requireNonNull(task.getException())
+                                    .toString());
                             Toast.makeText(LoginActivity.this, "There is no account " +
                                             "associated with this email. Try a different email.",
                                     Toast.LENGTH_LONG).show();

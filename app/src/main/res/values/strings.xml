@@ -20,8 +20,6 @@
     <string name="auth_failed">Authentication failed, check your email and password or sign up for a new account</string>
 
     <!-- Strings related to the master detail page (main page) -->
-    <string name="title_map_list">Shelter Map</string>
-    <string name="title_map_detail">Map Detail</string>
     <string name="title_activity_maps_master">Shelter Map</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
