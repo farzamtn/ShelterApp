@@ -19,6 +19,7 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.CS2340.shelterapp.Model.Login;
+import com.CS2340.shelterapp.Model.User;
 import com.CS2340.shelterapp.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -192,12 +193,12 @@ public class AdminActivity extends AppCompatActivity
         }
         if (disabled.equals("false")) {
             disabled = "true";
-            updateDBUserBeds(disabled);
+            User.updateDBUserDisabled(disabled, user);
             focusView = null;
             emailBox.setError("User Banned");
         } else {
             disabled = "false";
-            updateDBUserBeds(disabled);
+            User.updateDBUserDisabled(disabled, user);
             focusView = null;
             emailBox.setError("User Unbanned");
         }
@@ -224,19 +225,5 @@ public class AdminActivity extends AppCompatActivity
             }
         });
 
-    }
-
-    private void updateDBUserBeds(String newDisabled) {
-
-        user.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                user.child("Disabled").setValue(newDisabled);
-            }
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                System.out.print(databaseError.getMessage());
-            }
-        });
     }
 }

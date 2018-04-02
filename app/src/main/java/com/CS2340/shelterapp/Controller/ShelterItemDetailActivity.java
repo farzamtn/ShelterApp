@@ -1,6 +1,7 @@
 package com.CS2340.shelterapp.Controller;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -16,6 +17,7 @@ import android.widget.EditText;
 
 import com.CS2340.shelterapp.Model.ShelterData;
 import com.CS2340.shelterapp.Model.Shelters;
+import com.CS2340.shelterapp.Model.User;
 import com.CS2340.shelterapp.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -160,36 +162,6 @@ public class ShelterItemDetailActivity extends AppCompatActivity {
             @Override
             public void onCancelled(DatabaseError databaseError) {
                 Log.d("DB error in updateDBCap", databaseError.getMessage());
-            }
-        });
-    }
-
-    private void updateDBUserCheckedIn(int newCheckedIn) {
-        userRef = userDB.child(currentUser.getUid());
-
-        userRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                userRef.child("Checked In").setValue(newCheckedIn);
-            }
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                System.out.print(databaseError.getMessage());
-            }
-        });
-    }
-
-    private void updateDBUserBeds(int newBeds) {
-        userRef = userDB.child(currentUser.getUid());
-
-        userRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                userRef.child("Beds").setValue(newBeds);
-            }
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                System.out.print(databaseError.getMessage());
             }
         });
     }
@@ -454,15 +426,15 @@ public class ShelterItemDetailActivity extends AppCompatActivity {
     }
 
     private void checkInUser() {
-        updateDBUserBeds(Integer.parseInt(capChange));
-        updateDBUserCheckedIn(mItem.getKey());
+        User.updateDBUserBeds(Integer.parseInt(capChange));
+        User.updateDBUserCheckedIn(mItem.getKey());
         updateScreen();
     }
 
     private void checkOutUser() {
-        updateDBUserBeds(0);
+        User.updateDBUserBeds(0);
         beds = 0;
-        updateDBUserCheckedIn(-1);
+        User.updateDBUserCheckedIn(-1);
         checkedIn = -1;
         updateScreen();
     }
@@ -471,8 +443,9 @@ public class ShelterItemDetailActivity extends AppCompatActivity {
      * creates a new instance of the current intent (not the best way but for updating data dynamically) - Farzam
      */
     private void updateScreen() {
-        Intent intent = getIntent();
+        Intent intent = new Intent(this, ShelterItemDetailActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+        intent.putExtra(ShelterItemDetailFragment.ARG_ITEM_ID, mItem.getKey());
         finish();
         startActivity(intent);
     }
