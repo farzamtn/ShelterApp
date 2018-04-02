@@ -8,7 +8,6 @@ import android.text.InputType;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -23,6 +22,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+
+import java.util.Objects;
 
 /**
  * A login screen that offers login via email/password + Email/Password recovery (added after M9 by
@@ -78,11 +79,7 @@ public class LoginActivity extends AppCompatActivity {
         // Set up the login form.
         email = findViewById(R.id.username);
         password = findViewById(R.id.password);
-        Button signInButton = findViewById(R.id.sign_in_button);
-        Button registerButton = findViewById(R.id.register_button);
-        Button resetPassword_button = findViewById(R.id.resetPassword_button);
         progressBar = findViewById(R.id.login_progress);
-        View loginFormView = findViewById(R.id.login_form);
     }
 
     /**
@@ -121,7 +118,7 @@ public class LoginActivity extends AppCompatActivity {
             email.setError(getString(R.string.error_field_required));
             focusView = email;
             cancel = true;
-        } else if (!Login.isUsernameValid(user)) {
+        } else if (Login.isUsernameValid(user)) {
             email.setError(getString(R.string.error_invalid_email));
             focusView = email;
             cancel = true;
@@ -165,7 +162,7 @@ public class LoginActivity extends AppCompatActivity {
 //                            } catch (Exception e) {
 //                                e.printStackTrace();
 //                            }
-                            Log.d("Firebase Auth error: ", task.getException().toString());
+                            Log.d("Firebase Auth error: ", Objects.requireNonNull(task.getException()).toString());
                             // there was an error
                             Toast.makeText(LoginActivity.this,
                                     getString(R.string.auth_failed), Toast.LENGTH_LONG).show();
@@ -177,6 +174,7 @@ public class LoginActivity extends AppCompatActivity {
 
                             //Getting the correct type of user based on their login info
                             FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+                            assert currentUser != null;
                             String RegisteredUserID = currentUser.getUid();
                             conditionRef = mLoginDatabase.child("Users").child(RegisteredUserID);
 
@@ -187,7 +185,6 @@ public class LoginActivity extends AppCompatActivity {
                                             .getValue(String.class);
 
                                     if ("true".equals(disabled)) {
-                                        View focusView1 = email;
                                         email.setError("User is Banned");
                                         Toast.makeText(LoginActivity.this,
                                                 "This account has been banned. " +
@@ -199,6 +196,7 @@ public class LoginActivity extends AppCompatActivity {
 
                                     String userType = dataSnapshot.child("User Type")
                                             .getValue(String.class);
+                                    assert userType != null;
                                     switch (userType) {
                                         case "Admin": {
                                             Intent intentUser = new Intent(
@@ -292,7 +290,7 @@ public class LoginActivity extends AppCompatActivity {
                                             " to reset your password.",
                                     Toast.LENGTH_LONG).show();
                         } else {
-                            Log.d("Pass Reset", task.getException().toString());
+                            Log.d("Pass Reset", Objects.requireNonNull(task.getException()).toString());
                             Toast.makeText(LoginActivity.this, "There is no account " +
                                             "associated with this email. Try a different email.",
                                     Toast.LENGTH_LONG).show();

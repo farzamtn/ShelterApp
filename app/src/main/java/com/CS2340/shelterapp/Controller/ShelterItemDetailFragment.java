@@ -2,6 +2,7 @@ package com.CS2340.shelterapp.Controller;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -45,6 +46,7 @@ public class ShelterItemDetailFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        assert getArguments() != null;
         if (getArguments().containsKey(ARG_ITEM_ID)) {
             // Load the dummy content specified by the fragment
             // arguments. In a real-world scenario, use a Loader
@@ -52,6 +54,7 @@ public class ShelterItemDetailFragment extends Fragment {
             mItem = Shelters.INSTANCE.findItemById(getArguments().getInt(ARG_ITEM_ID));
 
             Activity activity = this.getActivity();
+            assert activity != null;
             CollapsingToolbarLayout appBarLayout = activity
                     .findViewById(R.id.toolbar_layout);
             if (appBarLayout != null) {
@@ -61,7 +64,7 @@ public class ShelterItemDetailFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.shelteritem_detail, container, false);
 

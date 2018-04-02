@@ -37,8 +37,6 @@ public class ShelterItemDetailActivity extends AppCompatActivity {
 
     private DatabaseReference mShelterDatabase;
     private DatabaseReference conditionRef;
-    private FirebaseUser currentUser; //DO NOT CONVERT TO LOCAL VARIABLE
-    private DatabaseReference userDB; //DO NOT CONVERT TO LOCAL VARIABLE
     private DatabaseReference userDBref;
     private DatabaseReference shelterDBref;
     private int shelterId;
@@ -62,9 +60,10 @@ public class ShelterItemDetailActivity extends AppCompatActivity {
         maxCap = 10; //default maxCap
         capChange = "0"; //change is 0 by default
 
-        currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        assert currentUser != null;
         String RegisteredUserID = currentUser.getUid();
-        userDB = FirebaseDatabase.getInstance().getReference().child("Users");
+        DatabaseReference userDB = FirebaseDatabase.getInstance().getReference().child("Users");
         userDBref = userDB.child(RegisteredUserID);
 
         Intent intent = getIntent();
@@ -374,6 +373,7 @@ public class ShelterItemDetailActivity extends AppCompatActivity {
         AlertDialog.Builder builder = new AlertDialog.Builder(
                 ShelterItemDetailActivity.this);
         builder.setTitle("User Already Checked-In");
+        assert mItem != null;
         builder.setMessage("The current user is already checked-in to another Shelter.\n"
                 + "User checked in at " + mItem.getName());
 
