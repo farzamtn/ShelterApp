@@ -52,7 +52,8 @@ public class ShelterItemDetailFragment extends Fragment {
             mItem = Shelters.INSTANCE.findItemById(getArguments().getInt(ARG_ITEM_ID));
 
             Activity activity = this.getActivity();
-            CollapsingToolbarLayout appBarLayout = (CollapsingToolbarLayout) activity.findViewById(R.id.toolbar_layout);
+            CollapsingToolbarLayout appBarLayout = activity
+                    .findViewById(R.id.toolbar_layout);
             if (appBarLayout != null) {
                 appBarLayout.setTitle(mItem.getName());
             }
@@ -65,14 +66,22 @@ public class ShelterItemDetailFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.shelteritem_detail, container, false);
 
         if (mItem != null) {
-            ((TextView) rootView.findViewById(R.id.shelterName)).setText(String.format("Name: %s", mItem.getName()));
-            ((TextView) rootView.findViewById(R.id.shelterCapacity)).setText(String.format("Capacity: %s", mItem.getCapacity()));
-            ((TextView) rootView.findViewById(R.id.shelterRestriction)).setText(String.format("Restrictions: %s", mItem.getRestrictions()));
-            ((TextView) rootView.findViewById(R.id.shelterLongitude)).setText(String.format("Longitude: %s", mItem.getLongitude()));
-            ((TextView) rootView.findViewById(R.id.shelterLatitude)).setText(String.format("Latitude: %s", mItem.getLatitude()));
-            ((TextView) rootView.findViewById(R.id.shelterAddress)).setText(String.format("Address: %s", mItem.getAddress()));
-            ((TextView) rootView.findViewById(R.id.shelterNotes)).setText(String.format("Special Notes: %s", mItem.getSpecialNotes()));
-            ((TextView) rootView.findViewById(R.id.shelterPhoneNumber)).setText(String.format("Phone Number: %s", mItem.getPhoneNumber()));
+            ((TextView) rootView.findViewById(R.id.shelterName))
+                    .setText(String.format("Name: %s", mItem.getName()));
+            ((TextView) rootView.findViewById(R.id.shelterCapacity))
+                    .setText(String.format("Capacity: %s", mItem.getCapacity()));
+            ((TextView) rootView.findViewById(R.id.shelterRestriction))
+                    .setText(String.format("Restrictions: %s", mItem.getRestrictions()));
+            ((TextView) rootView.findViewById(R.id.shelterLongitude))
+                    .setText(String.format("Longitude: %s", mItem.getLongitude()));
+            ((TextView) rootView.findViewById(R.id.shelterLatitude))
+                    .setText(String.format("Latitude: %s", mItem.getLatitude()));
+            ((TextView) rootView.findViewById(R.id.shelterAddress))
+                    .setText(String.format("Address: %s", mItem.getAddress()));
+            ((TextView) rootView.findViewById(R.id.shelterNotes))
+                    .setText(String.format("Special Notes: %s", mItem.getSpecialNotes()));
+            ((TextView) rootView.findViewById(R.id.shelterPhoneNumber))
+                    .setText(String.format("Phone Number: %s", mItem.getPhoneNumber()));
         }
 
         return rootView;

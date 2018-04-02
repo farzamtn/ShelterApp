@@ -25,7 +25,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 /**
- * A login screen that offers login via email/password + Email/Password recovery (added after M9 by Farzam)
+ * A login screen that offers login via email/password + Email/Password recovery (added after M9 by
+ * Farzam)
  *
  * @author Farzam
  * @version 2.0
@@ -66,8 +67,6 @@ public class LoginActivity extends AppCompatActivity {
         //Check if user is already signed on (persistence)
         if (mAuth.getCurrentUser() != null) {
             //Populating shelter shelterModel class after successful login attempt
-            //TODO: Farzam: Check if the number of children in Shelters DB changes and clear shelterModel list and add shelters to shelterModel again
-            //following TODO: Tried getting ChildrenCount from dataSnapShot and comparing it with getItems().size() but it returns 0 everytime
             if (shelterModel.getItems().isEmpty()) {
                 populateShelterInfo();
             }
@@ -77,11 +76,11 @@ public class LoginActivity extends AppCompatActivity {
         }
 
         // Set up the login form.
-        email = (EditText) findViewById(R.id.username);
-        password = (EditText) findViewById(R.id.password);
-        Button signInButton = (Button) findViewById(R.id.sign_in_button);
-        Button registerButton = (Button) findViewById(R.id.register_button);
-        Button resetPassword_button = (Button) findViewById(R.id.resetPassword_button);
+        email = findViewById(R.id.username);
+        password = findViewById(R.id.password);
+        Button signInButton = findViewById(R.id.sign_in_button);
+        Button registerButton = findViewById(R.id.register_button);
+        Button resetPassword_button = findViewById(R.id.resetPassword_button);
         progressBar = findViewById(R.id.login_progress);
         View loginFormView = findViewById(R.id.login_form);
     }
@@ -147,13 +146,14 @@ public class LoginActivity extends AppCompatActivity {
                         if (!task.isSuccessful()) {
 //                            try {
 //                                throw task.getException();
-//                            } catch (FirebaseAuthInvalidCredentialsException existEmail) { // For lockout after 3 incorrect attempts
+//                            } catch (FirebaseAuthInvalidCredentialsException existEmail) {
 //                                lockoutRef = mLoginDatabase.child("Users");
 //                                Query queryEmail = lockoutRef.orderByChild("Email").equalTo(user);
 //                                queryEmail.addValueEventListener(new ValueEventListener() {
 //                                    @Override
 //                                    public void onDataChange(DataSnapshot dataSnapshot) {
-//                                        Toast.makeText(LoginActivity.this, queryEmail.toString(), Toast.LENGTH_LONG).show();
+//                                        Toast.makeText(LoginActivity.this, queryEmail.toString(),
+//                                          Toast.LENGTH_LONG).show();
 //                                        Log.d("QUERY : ", dataSnapshot.toString());
 //                                    }
 //
@@ -167,11 +167,10 @@ public class LoginActivity extends AppCompatActivity {
 //                            }
                             Log.d("Firebase Auth error: ", task.getException().toString());
                             // there was an error
-                            Toast.makeText(LoginActivity.this, getString(R.string.auth_failed), Toast.LENGTH_LONG).show();
+                            Toast.makeText(LoginActivity.this,
+                                    getString(R.string.auth_failed), Toast.LENGTH_LONG).show();
                         } else {
                             //Populating shelter shelterModel class after successful login attempt
-                            //TODO: Farzam: Check if the number of children in Shelters DB changes and clear shelterModel list and add shelters to shelterModel again
-                            //following TODO: Tried getting ChildrenCount from dataSnapShot and comparing it with getItems().size() but it returns 0 everytime
                             if (shelterModel.getItems().isEmpty()) {
                                 populateShelterInfo();
                             }
@@ -184,35 +183,58 @@ public class LoginActivity extends AppCompatActivity {
                             conditionRef.addValueEventListener(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(DataSnapshot dataSnapshot) {
-                                    String disabled = dataSnapshot.child("Disabled").getValue(String.class);
+                                    String disabled = dataSnapshot.child("Disabled")
+                                            .getValue(String.class);
 
                                     if ("true".equals(disabled)) {
                                         View focusView1 = email;
                                         email.setError("User is Banned");
-                                        Toast.makeText(LoginActivity.this, "This account has been banned. Please contact the administrator.",
+                                        Toast.makeText(LoginActivity.this,
+                                                "This account has been banned. " +
+                                                        "Please contact the administrator.",
                                                 Toast.LENGTH_LONG).show();
                                         FirebaseAuth.getInstance().signOut();
                                         return;
                                     }
 
-                                    String userType = dataSnapshot.child("User Type").getValue(String.class);
-                                    if("Admin".equals(userType)){
-                                        Intent intentUser = new Intent(LoginActivity.this, AdminActivity.class);
-                                        intentUser.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                        startActivity(intentUser);
-                                        finish();
-                                    } else if ("Shelter Employee".equals(userType)) {
-                                        Intent intentUser = new Intent(LoginActivity.this, MapsMasterActivity.class);
-                                        intentUser.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                        startActivity(intentUser);
-                                        finish();
-                                    } else if ("Shelter Seeker".equals(userType)) {
-                                        Intent intentUser = new Intent(LoginActivity.this, MapsMasterActivity.class);
-                                        intentUser.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                        startActivity(intentUser);
-                                        finish();
-                                    } else {
-                                        Toast.makeText(LoginActivity.this, "Failed Login. Please Try Again", Toast.LENGTH_SHORT).show();
+                                    String userType = dataSnapshot.child("User Type")
+                                            .getValue(String.class);
+                                    switch (userType) {
+                                        case "Admin": {
+                                            Intent intentUser = new Intent(
+                                                    LoginActivity.this,
+                                                    AdminActivity.class);
+                                            intentUser.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK |
+                                                    Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                            startActivity(intentUser);
+                                            finish();
+                                            break;
+                                        }
+                                        case "Shelter Employee": {
+                                            Intent intentUser = new Intent(
+                                                    LoginActivity.this,
+                                                    MapsMasterActivity.class);
+                                            intentUser.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK |
+                                                    Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                            startActivity(intentUser);
+                                            finish();
+                                            break;
+                                        }
+                                        case "Shelter Seeker": {
+                                            Intent intentUser = new Intent(
+                                                    LoginActivity.this,
+                                                    MapsMasterActivity.class);
+                                            intentUser.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK |
+                                                    Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                            startActivity(intentUser);
+                                            finish();
+                                            break;
+                                        }
+                                        default:
+                                            Toast.makeText(LoginActivity.this,
+                                                    "Failed Login. Please Try Again",
+                                                    Toast.LENGTH_SHORT).show();
+                                            break;
                                     }
                                 }
 
@@ -242,11 +264,13 @@ public class LoginActivity extends AppCompatActivity {
     public void passwordReset(View view) {
         AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this);
         builder.setTitle("Enter Email");
-        builder.setMessage("Please enter the email you used to register for an account in order to receive a password reset email.");
+        builder.setMessage("Please enter the email you used to register for an account in order" +
+                " to receive a password reset email.");
 
         // Set up the input
         final EditText input = new EditText(LoginActivity.this);
-        // Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
+        // Specify the type of input expected; this, for example, sets the input as a password,
+        // and will mask the text
         input.setInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
         builder.setView(input);
 
@@ -257,17 +281,20 @@ public class LoginActivity extends AppCompatActivity {
                         Toast.LENGTH_LONG).show();
             } else {
                 if (!Login.isValidEmail(emailAddress)) {
-                    Toast.makeText(LoginActivity.this, "Invalid email entered. Please enter a valid email address.",
+                    Toast.makeText(LoginActivity.this, "Invalid email entered. " +
+                                    "Please enter a valid email address.",
                             Toast.LENGTH_LONG).show();
                 } else {
                     mAuth.sendPasswordResetEmail(emailAddress).addOnCompleteListener(task -> {
                         if (task.isSuccessful()) {
-                            Toast.makeText(LoginActivity.this, "Password reset email sent. Please follow the instructions in the email" +
+                            Toast.makeText(LoginActivity.this, "Password reset email " +
+                                            "sent. Please follow the instructions in the email" +
                                             " to reset your password.",
                                     Toast.LENGTH_LONG).show();
                         } else {
                             Log.d("Pass Reset", task.getException().toString());
-                            Toast.makeText(LoginActivity.this, "There is no account associated with this email. Try a different email.",
+                            Toast.makeText(LoginActivity.this, "There is no account " +
+                                            "associated with this email. Try a different email.",
                                     Toast.LENGTH_LONG).show();
                         }
                     });
@@ -283,8 +310,10 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     /**
-     * Method for getting all the shelter info from the FireBase DB and adding it to the local shelterModel.
-     * Remember both the .csv file (for local bufferReading) and .json file (For FireBase DB) has been
+     * Method for getting all the shelter info from the FireBase DB and adding it to the local
+     * shelterModel.
+     * Remember both the .csv file (for local bufferReading) and .json file (For FireBase DB)
+     * has been
      * added to the res/raw just in case. - Farzam
      */
     private void populateShelterInfo() {
@@ -292,7 +321,8 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot shelters : dataSnapshot.getChildren()) {
-                    shelterModel.addItem(new ShelterData(shelters.child("Unique Key").getValue(Integer.class),
+                    shelterModel.addItem(new ShelterData(shelters.child("Unique Key")
+                            .getValue(Integer.class),
                             shelters.child("Shelter Name").getValue(String.class),
                             shelters.child("Capacity").getValue(String.class),
                             shelters.child("Restrictions").getValue(String.class),

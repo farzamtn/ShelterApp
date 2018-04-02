@@ -56,7 +56,7 @@ public class ShelterItemDetailActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_shelteritem_detail);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.detail_toolbar);
+        Toolbar toolbar = findViewById(R.id.detail_toolbar);
         setSupportActionBar(toolbar);
         mShelterDatabase = FirebaseDatabase.getInstance().getReference().child("Shelters");
         maxCap = 10; //default maxCap
@@ -75,7 +75,7 @@ public class ShelterItemDetailActivity extends AppCompatActivity {
         getUserInfo();
         getShelterInfo();
 
-        fab = (FloatingActionButton) findViewById(R.id.checkIn);
+        fab = findViewById(R.id.checkIn);
 
         fab.setOnClickListener(view -> {
 
@@ -166,7 +166,8 @@ public class ShelterItemDetailActivity extends AppCompatActivity {
 
         // Set up the input
         final EditText input = new EditText(ShelterItemDetailActivity.this);
-        // Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
+        // Specify the type of input expected; this, for example, sets the input as a password, and
+        // will mask the text
         input.setInputType(InputType.TYPE_CLASS_NUMBER);
         builder.setView(input);
 
@@ -195,7 +196,8 @@ public class ShelterItemDetailActivity extends AppCompatActivity {
     }
 
     private void groupDisplayInputBox() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(ShelterItemDetailActivity.this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(
+                ShelterItemDetailActivity.this);
         if (capacity.contains("single")) {
             builder.setTitle("Single or Group");
             builder.setMessage("Choose whether you are a single or a group");
@@ -262,7 +264,8 @@ public class ShelterItemDetailActivity extends AppCompatActivity {
     }
 
     private void displayConfirm() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(ShelterItemDetailActivity.this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(
+                ShelterItemDetailActivity.this);
         builder.setTitle("Release Beds");
         builder.setMessage("Confirm releasing " + beds + " bed(s).");
 
@@ -281,15 +284,20 @@ public class ShelterItemDetailActivity extends AppCompatActivity {
     }
 
     private void groupDisplayConfirm() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(ShelterItemDetailActivity.this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(
+                ShelterItemDetailActivity.this);
         builder.setTitle("Release Beds");
 
-        if (beds == 1) {
-            builder.setMessage("Confirm release of 1 family/group.");
-        } else if (beds == 2) {
-            builder.setMessage("Confirm release of 1 single.");
-        } else {
-            builder.setMessage("Confirm release of 1 family/group or 1 single.");
+        switch (beds) {
+            case 1:
+                builder.setMessage("Confirm release of 1 family/group.");
+                break;
+            case 2:
+                builder.setMessage("Confirm release of 1 single.");
+                break;
+            default:
+                builder.setMessage("Confirm release of 1 family/group or 1 single.");
+                break;
         }
 
         // Set up the buttons
@@ -335,7 +343,8 @@ public class ShelterItemDetailActivity extends AppCompatActivity {
     }
 
     private void displayMaxAlert() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(ShelterItemDetailActivity.this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(
+                ShelterItemDetailActivity.this);
         builder.setTitle("Too many Beds");
         builder.setMessage("Amount of beds is over the max allowed.");
 
@@ -347,7 +356,8 @@ public class ShelterItemDetailActivity extends AppCompatActivity {
         builder.show();
     }
     private void displayOverAlert() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(ShelterItemDetailActivity.this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(
+                ShelterItemDetailActivity.this);
         builder.setTitle("Not enough beds");
         builder.setMessage("Shelter does not have enough beds.");
 
@@ -361,7 +371,8 @@ public class ShelterItemDetailActivity extends AppCompatActivity {
 
     private void displayCheckInError() {
         ShelterData mItem = Shelters.INSTANCE.findItemById(checkedIn);
-        AlertDialog.Builder builder = new AlertDialog.Builder(ShelterItemDetailActivity.this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(
+                ShelterItemDetailActivity.this);
         builder.setTitle("User Already Checked-In");
         builder.setMessage("The current user is already checked-in to another Shelter.\n"
                 + "User checked in at " + mItem.getName());
@@ -389,7 +400,8 @@ public class ShelterItemDetailActivity extends AppCompatActivity {
     }
 
     /**
-     * creates a new instance of the current intent (not the best way but for updating data dynamically) - Farzam
+     * creates a new instance of the current intent
+     * (not the best way but for updating data dynamically) - Farzam
      */
     private void updateScreen() {
         Intent intent = new Intent(this, ShelterItemDetailActivity.class);

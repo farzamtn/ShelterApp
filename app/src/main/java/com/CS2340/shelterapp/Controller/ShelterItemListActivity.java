@@ -47,7 +47,7 @@ public class ShelterItemListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_shelteritem_list);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         toolbar.setTitle(getTitle());
 
@@ -61,7 +61,7 @@ public class ShelterItemListActivity extends AppCompatActivity {
         assert recyclerView != null;
         setupRecyclerView((RecyclerView) recyclerView);
 
-        SearchView searchBar = (SearchView) findViewById(R.id.search_bar);
+        SearchView searchBar = findViewById(R.id.search_bar);
         searchBar.setQueryHint("Search Shelters");
         searchBar.setSubmitButtonEnabled(true);
 
@@ -118,7 +118,8 @@ public class ShelterItemListActivity extends AppCompatActivity {
     }
 
     private void setupRecyclerView(@NonNull RecyclerView recyclerView, CharSequence query) {
-        recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(Shelters.INSTANCE.findItemsByQuery(query)));
+        recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(Shelters.INSTANCE
+                .findItemsByQuery(query)));
     }
 
     public class SimpleItemRecyclerViewAdapter
@@ -126,6 +127,11 @@ public class ShelterItemListActivity extends AppCompatActivity {
 
         private final List<ShelterData> mValues;
 
+        /**
+         * Recyvler view adapter for the ListView.
+         *
+         * @param items the list of ShelterData items
+         */
         public SimpleItemRecyclerViewAdapter(List<ShelterData> items) {
             mValues = items;
         }
@@ -176,8 +182,8 @@ public class ShelterItemListActivity extends AppCompatActivity {
             ViewHolder(View view) {
                 super(view);
                 mView = view;
-                mIdView = (TextView) view.findViewById(R.id.id_text);
-                mContentView = (TextView) view.findViewById(R.id.content);
+                mIdView = view.findViewById(R.id.id_text);
+                mContentView = view.findViewById(R.id.content);
             }
 
             @Override

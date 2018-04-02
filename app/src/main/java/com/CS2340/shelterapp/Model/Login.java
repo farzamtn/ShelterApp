@@ -11,14 +11,12 @@ import java.util.regex.Pattern;
  */
 public class Login {
 
-
      //Methods declared static to avoid creating new instances.
-
 
     /**
      * Checks if a username is valid.
      *
-     * @param user the String to be checked for rulles
+     * @param user the String to be checked for
      * @return true if valid
      */
     public static boolean isUsernameValid(CharSequence user) {
@@ -45,7 +43,6 @@ public class Login {
      * @return true if password is valid
      */
     public static boolean isPasswordValid(CharSequence pass) {
-        //TODO: Replace this with your own logic
         return pass.length() >= 6;
     }
 

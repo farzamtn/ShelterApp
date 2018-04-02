@@ -11,6 +11,10 @@ import java.util.List;
  */
 
 public final class Shelters {
+
+    /**
+     * Shelters Instance Initializer
+     */
     public static final Shelters INSTANCE = new Shelters();
 
     private List<ShelterData> items;
@@ -19,14 +23,30 @@ public final class Shelters {
         items = new ArrayList<>();
     }
 
+    /**
+     * Adds a specific item to the list.
+     *
+     * @param item the ShelterData to be added to the list
+     */
     public void addItem(ShelterData item) {
         items.add(item);
     }
 
+    /**
+     * Gets all the items in the list.
+     *
+     * @return a list of all the items
+     */
     public List<ShelterData> getItems() {
         return items;
     }
 
+    /**
+     * Finds a shelter with a given name.
+     *
+     * @param name the name of the shelter to be searched for
+     * @return the matching shelter
+     */
     public ShelterData findItemByName(String name) {
         for (ShelterData sd: items) {
             if (sd.getName().equals(name)) {
@@ -37,6 +57,12 @@ public final class Shelters {
         return null;
     }
 
+    /**
+     * Finds a shelter with a given id.
+     *
+     * @param id the id to be searched for
+     * @return the matching case
+     */
     public ShelterData findItemById(int id) {
         for (ShelterData sd : items) {
             if (sd.getKey() == id) {
@@ -47,6 +73,12 @@ public final class Shelters {
         return null;
     }
 
+    /**
+     * Search method for the listview.
+     *
+     * @param charQuery the given search query
+     * @return the mataching ShelterData
+     */
     public List<ShelterData> findItemsByQuery(CharSequence charQuery) {
         List<ShelterData> foundShelters = new ArrayList<>();
         String query = charQuery.toString().toLowerCase();

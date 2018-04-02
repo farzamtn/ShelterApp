@@ -49,32 +49,34 @@ public class AdminActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_admin);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         usersDatabase = FirebaseDatabase.getInstance().getReference().child("Users");
 
-        emailBox = (EditText) findViewById(R.id.emailInput);
-        ban = (Button) findViewById(R.id.ban);
+        emailBox = findViewById(R.id.emailInput);
+        ban = findViewById(R.id.ban);
         email = emailBox.getText().toString();
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(view -> Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+        FloatingActionButton fab = findViewById(R.id.fab);
+        fab.setOnClickListener(view -> Snackbar.make(view, "Replace with your own action",
+                Snackbar.LENGTH_LONG)
                 .setAction("Action", null).show());
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+                this, drawer, toolbar, R.string.navigation_drawer_open,
+                R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
     }
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
@@ -110,41 +112,48 @@ public class AdminActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_shelters) {
-            Intent intent = new Intent(this, ShelterItemListActivity.class);
-            startActivity(intent);
-        } else if (id == R.id.nav_map) {
-            Intent intent = new Intent(this, MapsMasterActivity.class);
-            startActivity(intent);
-        } else if (id == R.id.nav_share) {
+        switch (id) {
+            case R.id.nav_shelters: {
+                Intent intent = new Intent(this, ShelterItemListActivity.class);
+                startActivity(intent);
+                break;
+            }
+            case R.id.nav_map: {
+                Intent intent = new Intent(this, MapsMasterActivity.class);
+                startActivity(intent);
+                break;
+            }
+            case R.id.nav_share:
 
-        } else if (id ==  R.id.nav_signout) {
+                break;
+            case R.id.nav_signout:
             /*  Prompt the user to sign out
                 If yes, clear cache and go back to the login screen. - Farzam
              */
-            AlertDialog.Builder builder = new AlertDialog.Builder(AdminActivity.this);
-            builder.setMessage("Are you sure you want to sign out?");
+                AlertDialog.Builder builder = new AlertDialog.Builder(AdminActivity.this);
+                builder.setMessage("Are you sure you want to sign out?");
 
-            builder.setPositiveButton("YES", (dialog, which) -> {
-                FirebaseAuth.getInstance().signOut(); //Ending FireBase session for this user
-                Intent intent = new Intent(getBaseContext(), LoginActivity.class);
-                startActivity(intent);
-                finish();
-            });
+                builder.setPositiveButton("YES", (dialog, which) -> {
+                    FirebaseAuth.getInstance().signOut(); //Ending FireBase session for this user
+                    Intent intent = new Intent(getBaseContext(), LoginActivity.class);
+                    startActivity(intent);
+                    finish();
+                });
 
-            builder.setNegativeButton("NO", (dialog, which) -> {
-                //Do nothing
-            });
-            builder.show();
+                builder.setNegativeButton("NO", (dialog, which) -> {
+                    //Do nothing
+                });
+                builder.show();
+                break;
         }
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
 
     /**
-     * banUser method that will get fired when admin clicks on the Ban/Unban button.
+     * banUser method that will get fired when admin clicks on the Ban/Un-ban button.
      *
      * @param view the current view
      */
@@ -153,7 +162,7 @@ public class AdminActivity extends AppCompatActivity
 
         usersDatabase = FirebaseDatabase.getInstance().getReference().child("Users");
 
-        emailBox = (EditText) findViewById(R.id.emailInput);
+        emailBox = findViewById(R.id.emailInput);
         email = emailBox.getText().toString();
         boolean cancel = false;
 

@@ -52,12 +52,12 @@ public class RegistrationActivity extends AppCompatActivity {
         mRegisterDatabase = FirebaseDatabase.getInstance().getReference().child("Users");
 
         //Set up the registration form
-        name = (EditText) findViewById(R.id.new_register_name);
-        email = (EditText) findViewById(R.id.new_register_email);
-        password = (EditText) findViewById(R.id.new_register_password);
-        phoneNumber = (EditText) findViewById(R.id.new_register_phone);
-        progressBar = (ProgressBar) findViewById(R.id.registration_progress);
-        userTypes = (RadioGroup) findViewById(R.id.userTypesRbutton);
+        name = findViewById(R.id.new_register_name);
+        email = findViewById(R.id.new_register_email);
+        password = findViewById(R.id.new_register_password);
+        phoneNumber = findViewById(R.id.new_register_phone);
+        progressBar = findViewById(R.id.registration_progress);
+        userTypes = findViewById(R.id.userTypesRbutton);
     }
 
     /**
@@ -78,7 +78,7 @@ public class RegistrationActivity extends AppCompatActivity {
 
         //Retrieving the selected user type
         int selectedButtonId = userTypes.getCheckedRadioButtonId();
-        RadioButton selectedUser = (RadioButton) findViewById(selectedButtonId);
+        RadioButton selectedUser = findViewById(selectedButtonId);
         final String userType = selectedUser.getText().toString();
 
         boolean cancel = false;
@@ -142,31 +142,38 @@ public class RegistrationActivity extends AppCompatActivity {
                         // the auth state listener will be notified and logic to handle the
                         // signed in user can be handled in the listener.
                         if (!task.isSuccessful()) {
-                            Toast.makeText(RegistrationActivity.this, "Authentication failed." + task.getException(),
+                            Toast.makeText(RegistrationActivity.this,
+                                    "Authentication failed." + task.getException(),
                                     Toast.LENGTH_LONG).show();
                         } else {
                             if (mAuth.getCurrentUser() != null) {
-                                UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
+                                UserProfileChangeRequest profileUpdates =
+                                        new UserProfileChangeRequest.Builder()
                                         .setDisplayName(fullName)
                                         .build();
 
                                 //Updating user name
-                                mAuth.getCurrentUser().updateProfile(profileUpdates).addOnCompleteListener(task1 -> {
+                                mAuth.getCurrentUser().updateProfile(profileUpdates)
+                                        .addOnCompleteListener(task1 -> {
                                     if (!task1.isSuccessful()) {
-                                        Log.d("Update profile error", task.getException().toString());
+                                        Log.d("Update profile error",
+                                                task.getException().toString());
                                     }
                                 });
 
                                 //Updating user email
-                                mAuth.getCurrentUser().updateEmail(user).addOnCompleteListener(task12 -> {
+                                mAuth.getCurrentUser().updateEmail(user)
+                                        .addOnCompleteListener(task12 -> {
                                    if (!task.isSuccessful()) {
-                                      Log.d("Update Email error", task.getException().toString());
+                                      Log.d("Update Email error",
+                                              task.getException().toString());
                                    }
                                 });
 
                                 //Adding new user information to DB with Uid being their Unique Key
                                 String user_id = mAuth.getCurrentUser().getUid();
-                                DatabaseReference current_user_db = mRegisterDatabase.child(user_id);
+                                DatabaseReference current_user_db = mRegisterDatabase
+                                        .child(user_id);
                                 current_user_db.child("Name").setValue(fullName);
                                 current_user_db.child("Email").setValue(user);
                                 current_user_db.child("Phone Number").setValue(phoneNum);
@@ -176,20 +183,31 @@ public class RegistrationActivity extends AppCompatActivity {
                                 current_user_db.child("Disabled").setValue("false");
                             }
 
-                            Toast.makeText(RegistrationActivity.this, "Your new account has been created. Welcome!",
+                            Toast.makeText(RegistrationActivity.this,
+                                    "Your new account has been created. Welcome!",
                                     Toast.LENGTH_LONG).show();
 
-                            //Start the correct activity based on usertype
-                            if ("Admin".equals(userType)){
-                                startActivity(new Intent(RegistrationActivity.this, AdminActivity.class));
-                            } else if ("Shelter Employee".equals(userType)) {
-                                sendVerificationEmail();
-                                startActivity(new Intent(RegistrationActivity.this, LoginActivity.class));
-                                finish();
-                            } else if ("Shelter Seeker".equals(userType)) {
-                                sendVerificationEmail();
-                                startActivity(new Intent(RegistrationActivity.this, LoginActivity.class));
-                                finish();
+                            //Start the correct activity based on user type
+                            switch (userType) {
+                                case "Admin":
+                                    startActivity(new Intent(
+                                            RegistrationActivity.this,
+                                            AdminActivity.class));
+                                    break;
+                                case "Shelter Employee":
+                                    sendVerificationEmail();
+                                    startActivity(new Intent(
+                                            RegistrationActivity.this,
+                                            LoginActivity.class));
+                                    finish();
+                                    break;
+                                case "Shelter Seeker":
+                                    sendVerificationEmail();
+                                    startActivity(new Intent(
+                                            RegistrationActivity.this,
+                                            LoginActivity.class));
+                                    finish();
+                                    break;
                             }
                         }
                     });
@@ -206,13 +224,17 @@ public class RegistrationActivity extends AppCompatActivity {
                 if (task.isSuccessful()) {
                     Log.d("Verification Email:", "Email sent.");
                 } else {
-                    Toast.makeText(RegistrationActivity.this, "Cannot send verification email. Please try again later." + task.getException(),
+                    Toast.makeText(RegistrationActivity.this,
+                            "Cannot send verification email. Please try again later."
+                                    + task.getException(),
                             Toast.LENGTH_LONG).show();
                 }
 
             });
         } else {
-            Toast.makeText(RegistrationActivity.this, "(For dev: null user) Cannot send verification email. Please try again later.",
+            Toast.makeText(RegistrationActivity.this,
+                    "(For dev: null user) Cannot send verification email. " +
+                            "Please try again later.",
                     Toast.LENGTH_LONG).show();
         }
     }
