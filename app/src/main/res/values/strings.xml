@@ -13,7 +13,7 @@
     <string name="action_sign_in_short">Log in</string>
     <string name="error_invalid_name">Invalid Name entered</string>
     <string name="error_invalid_email">Invalid Email entered</string>
-    <string name="error_minimum_password">Password has to be at least 6 characters</string>
+    <string name="error_minimum_password">Password has to be at least 8 characters with an uppercase and lowercase letter, and number and symbol</string>
     <string name="error_invalid_phoneNumber">Invalid Phone Number entered</string>
     <string name="error_field_required">This field is required</string>
     <string name="title_activity_maps">Shelter Map</string>
