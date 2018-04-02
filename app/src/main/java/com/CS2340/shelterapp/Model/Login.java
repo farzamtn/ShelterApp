@@ -62,7 +62,7 @@ public class Login {
                 symbol = true;
             }
         }
-        return length && upper && lower && number && symbol;
+        return !length || !upper || !lower || !number || !symbol;
     }
 
 }
