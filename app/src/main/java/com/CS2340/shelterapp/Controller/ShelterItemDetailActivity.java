@@ -1,8 +1,6 @@
 package com.CS2340.shelterapp.Controller;
 
 import android.app.AlertDialog;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -12,7 +10,6 @@ import android.support.v7.widget.Toolbar;
 import android.text.InputType;
 import android.util.Log;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.EditText;
 
 import com.CS2340.shelterapp.Model.ShelterData;
@@ -40,9 +37,8 @@ public class ShelterItemDetailActivity extends AppCompatActivity {
 
     private DatabaseReference mShelterDatabase;
     private DatabaseReference conditionRef;
-    private DatabaseReference userRef;
-    private FirebaseUser currentUser;
-    private DatabaseReference userDB;
+    private FirebaseUser currentUser; //DO NOT CONVERT TO LOCAL VARIABLE
+    private DatabaseReference userDB; //DO NOT CONVERT TO LOCAL VARIABLE
     private DatabaseReference userDBref;
     private DatabaseReference shelterDBref;
     private int shelterId;
@@ -81,28 +77,25 @@ public class ShelterItemDetailActivity extends AppCompatActivity {
 
         fab = (FloatingActionButton) findViewById(R.id.checkIn);
 
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        fab.setOnClickListener(view -> {
 
-                if (checkedIn == -1) {
-                    if (capacity.contains("famil") || capacity.contains("apartment")) {
-                        groupDisplayInputBox();
-                    } else {
-                        displayInputBox();
-                    }
-                } else if (checkedIn == mItem.getKey()) {
-                    if (capacity.contains("famil") || capacity.contains("apartment")) {
-                        groupDisplayConfirm();
-                    } else {
-                        displayConfirm();
-                    }
+            if (checkedIn == -1) {
+                if (capacity.contains("famil") || capacity.contains("apartment")) {
+                    groupDisplayInputBox();
                 } else {
-                    displayCheckInError();
+                    displayInputBox();
                 }
-                getUserInfo();
-                getShelterInfo();
+            } else if (checkedIn == mItem.getKey()) {
+                if (capacity.contains("famil") || capacity.contains("apartment")) {
+                    groupDisplayConfirm();
+                } else {
+                    displayConfirm();
+                }
+            } else {
+                displayCheckInError();
             }
+            getUserInfo();
+            getShelterInfo();
         });
 
         // Show the Up button in the action bar.
@@ -178,34 +171,26 @@ public class ShelterItemDetailActivity extends AppCompatActivity {
         builder.setView(input);
 
         // Set up the buttons
-        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                capChange = input.getText().toString();
-                if (Integer.parseInt(mItem.getCapacity()) < Integer.parseInt(capChange)) {
-                    input.setError("Not enough beds");
-                    displayOverAlert();
-                    capChange = "0";
-                } else if (maxCap < Integer.parseInt(capChange)) {
-                    displayMaxAlert();
-                    capChange = "0";
-                } else {
-                    newCap = String.valueOf(Integer.parseInt(capacity) - Integer.parseInt(capChange));
+        builder.setPositiveButton("OK", (dialog, which) -> {
+            capChange = input.getText().toString();
+            if (Integer.parseInt(mItem.getCapacity()) < Integer.parseInt(capChange)) {
+                input.setError("Not enough beds");
+                displayOverAlert();
+                capChange = "0";
+            } else if (maxCap < Integer.parseInt(capChange)) {
+                displayMaxAlert();
+                capChange = "0";
+            } else {
+                newCap = String.valueOf(Integer.parseInt(capacity) - Integer.parseInt(capChange));
 
-                    if (!capChange.equals("0")) {
-                        checkInUser();
-                        updateDBCap(newCap);
-                        fab.setImageResource(android.R.drawable.checkbox_on_background);
-                    }
+                if (!"0".equals(capChange)) {
+                    checkInUser();
+                    updateDBCap(newCap);
+                    fab.setImageResource(android.R.drawable.checkbox_on_background);
                 }
             }
         });
-        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.cancel();
-            }
-        });
+        builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
         builder.show();
     }
 
@@ -221,69 +206,58 @@ public class ShelterItemDetailActivity extends AppCompatActivity {
 
 
         // Set up the buttons
-        builder.setPositiveButton("Family or Group", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
+        builder.setPositiveButton("Family or Group", (dialog, which) -> {
+            int index;
+            if (capacity.contains("apartment")) {
+                index = capacity.indexOf('a');
+            }
+            else {
+                index = capacity.indexOf('f');
+            }
+            int oldCap = Integer.parseInt(capacity.substring(0, index - 1));
+            if (oldCap == 0) {
+                capChange = "0";
+                displayOverAlert();
+            } else {
+                capChange = "1";
+            }
+            int newCap = oldCap - 1;
+            String updatedCap = "" + newCap + " " + capacity.substring(index);
+
+
+            if (!"0".equals(capChange)) {
+                checkInUser();
+                updateDBCap(updatedCap);
+                fab.setImageResource(android.R.drawable.checkbox_on_background);
+            }
+
+        });
+
+        if (capacity.contains("single")) {
+            builder.setNegativeButton("Single", (dialog, which) -> {
                 int index;
-                if (capacity.contains("apartment")) {
-                    index = capacity.indexOf('a');
-                }
-                else {
-                    index = capacity.indexOf('f');
-                }
-                int oldCap = Integer.parseInt(capacity.substring(0, index - 1));
+                int comma = capacity.indexOf(",");
+                index = capacity.indexOf("single", comma);
+
+                int oldCap = Integer.parseInt(capacity.substring(comma + 2, index - 1));
                 if (oldCap == 0) {
                     capChange = "0";
                     displayOverAlert();
                 } else {
-                    capChange = "1";
+                    capChange = "2";
                 }
                 int newCap = oldCap - 1;
-                String updatedCap = "" + newCap + " " + capacity.substring(index);
-
-
-                if (!capChange.equals("0")) {
+                String updatedCap = capacity.substring(0, comma + 2)
+                        + newCap + " " + capacity.substring(index);
+                if (!"0".equals(capChange)) {
                     checkInUser();
                     updateDBCap(updatedCap);
                     fab.setImageResource(android.R.drawable.checkbox_on_background);
                 }
 
-            }
-        });
-
-        if (capacity.contains("single")) {
-            builder.setNegativeButton("Single", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    int index;
-                    int comma = capacity.indexOf(",");
-                    index = capacity.indexOf("single", comma);
-
-                    int oldCap = Integer.parseInt(capacity.substring(comma + 2, index - 1));
-                    if (oldCap == 0) {
-                        capChange = "0";
-                        displayOverAlert();
-                    } else {
-                        capChange = "2";
-                    }
-                    int newCap = oldCap - 1;
-                    String updatedCap = capacity.substring(0, comma + 2)
-                            + newCap + " " + capacity.substring(index);
-                    if (!capChange.equals("0")) {
-                        checkInUser();
-                        updateDBCap(updatedCap);
-                        fab.setImageResource(android.R.drawable.checkbox_on_background);
-                    }
-
-                }
             });
         }
-        builder.setNeutralButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.cancel();
-            }
-        });
+        builder.setNeutralButton("Cancel", (dialog, which) -> dialog.cancel());
         builder.show();
     }
 
@@ -293,24 +267,16 @@ public class ShelterItemDetailActivity extends AppCompatActivity {
         builder.setMessage("Confirm releasing " + beds + " bed(s).");
 
         // Set up the buttons
-        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                capChange = Integer.toString(beds);
-                newCap = String.valueOf(Integer.parseInt(capacity) + Integer.parseInt(capChange));
-                if (!capChange.equals("0")) {
-                    checkOutUser();
-                    updateDBCap(newCap);
-                    fab.setImageResource(android.R.drawable.checkbox_off_background);
-                }
+        builder.setPositiveButton("OK", (dialog, which) -> {
+            capChange = Integer.toString(beds);
+            newCap = String.valueOf(Integer.parseInt(capacity) + Integer.parseInt(capChange));
+            if (!"0".equals(capChange)) {
+                checkOutUser();
+                updateDBCap(newCap);
+                fab.setImageResource(android.R.drawable.checkbox_off_background);
             }
         });
-        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.cancel();
-            }
-        });
+        builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
         builder.show();
     }
 
@@ -327,51 +293,43 @@ public class ShelterItemDetailActivity extends AppCompatActivity {
         }
 
         // Set up the buttons
-        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                if (beds == 1) {
-                    int index;
-                    if (capacity.contains("apartment")) {
-                        index = capacity.indexOf('a');
-                    }
-                    else {
-                        index = capacity.indexOf('f');
-                    }
-                    int oldCap = Integer.parseInt(capacity.substring(0, index - 1));
-                    int newCap = oldCap + 1;
-                    capChange = "1";
-                    String updatedCap = "" + newCap + " " + capacity.substring(index);
+        builder.setPositiveButton("OK", (dialog, which) -> {
+            if (beds == 1) {
+                int index;
+                if (capacity.contains("apartment")) {
+                    index = capacity.indexOf('a');
+                }
+                else {
+                    index = capacity.indexOf('f');
+                }
+                int oldCap = Integer.parseInt(capacity.substring(0, index - 1));
+                int newCap = oldCap + 1;
+                capChange = "1";
+                String updatedCap = "" + newCap + " " + capacity.substring(index);
 
-                    if (!capChange.equals("0")) {
-                        checkOutUser();
-                        updateDBCap(updatedCap);
-                        fab.setImageResource(android.R.drawable.checkbox_off_background);
-                    }
-                } else {
-                    int index;
-                    int comma = capacity.indexOf(",");
-                    index = capacity.indexOf("single", comma);
+                if (!"0".equals(capChange)) {
+                    checkOutUser();
+                    updateDBCap(updatedCap);
+                    fab.setImageResource(android.R.drawable.checkbox_off_background);
+                }
+            } else {
+                int index;
+                int comma = capacity.indexOf(",");
+                index = capacity.indexOf("single", comma);
 
-                    int oldCap = Integer.parseInt(capacity.substring(comma + 2, index - 1));
-                    int newCap = oldCap + 1;
-                    String updatedCap = capacity.substring(0, comma + 2)
-                            + newCap + " " + capacity.substring(index);
-                    capChange = "2";
-                    if (!capChange.equals("0")) {
-                        checkOutUser();
-                        updateDBCap(updatedCap);
-                        fab.setImageResource(android.R.drawable.checkbox_off_background);
-                    }
+                int oldCap = Integer.parseInt(capacity.substring(comma + 2, index - 1));
+                int newCap = oldCap + 1;
+                String updatedCap = capacity.substring(0, comma + 2)
+                        + newCap + " " + capacity.substring(index);
+                capChange = "2";
+                if (!"0".equals(capChange)) {
+                    checkOutUser();
+                    updateDBCap(updatedCap);
+                    fab.setImageResource(android.R.drawable.checkbox_off_background);
                 }
             }
         });
-        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.cancel();
-            }
-        });
+        builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
         builder.show();
 
     }
@@ -382,11 +340,8 @@ public class ShelterItemDetailActivity extends AppCompatActivity {
         builder.setMessage("Amount of beds is over the max allowed.");
 
         // Set up the buttons
-        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
+        builder.setPositiveButton("OK", (dialog, which) -> {
 
-            }
         });
 
         builder.show();
@@ -397,11 +352,8 @@ public class ShelterItemDetailActivity extends AppCompatActivity {
         builder.setMessage("Shelter does not have enough beds.");
 
         // Set up the buttons
-        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
+        builder.setPositiveButton("OK", (dialog, which) -> {
 
-            }
         });
 
         builder.show();
@@ -415,11 +367,8 @@ public class ShelterItemDetailActivity extends AppCompatActivity {
                 + "User checked in at " + mItem.getName());
 
         // Set up the buttons
-        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
+        builder.setPositiveButton("OK", (dialog, which) -> {
 
-            }
         });
 
         builder.show();

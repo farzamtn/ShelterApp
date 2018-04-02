@@ -20,7 +20,6 @@ import com.google.firebase.auth.FirebaseAuth;
 public class SettingsActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
-    private Button resendVerificationEmail;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,16 +29,11 @@ public class SettingsActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
+        fab.setOnClickListener(view -> Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                .setAction("Action", null).show());
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        resendVerificationEmail = (Button) findViewById(R.id.resendVerificationEmailBtn);
+        Button resendVerificationEmail = (Button) findViewById(R.id.resendVerificationEmailBtn);
 
         //Get Firebase auth instance
         mAuth = FirebaseAuth.getInstance();

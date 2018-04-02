@@ -68,7 +68,7 @@ public class ShelterItemListActivity extends AppCompatActivity {
         searchBar.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                if (query == null || query.equals("")) {
+                if ((query == null) || ("".equals(query))) {
                     setupRecyclerView((RecyclerView) recyclerView);
                 }
                 setupRecyclerView((RecyclerView) recyclerView, searchBar.getQuery());
@@ -77,7 +77,7 @@ public class ShelterItemListActivity extends AppCompatActivity {
 
             @Override
             public boolean onQueryTextChange(String query) {
-                if (query == null || query.equals("")) {
+                if ((query == null) || ("".equals(query))) {
                     setupRecyclerView((RecyclerView) recyclerView);
                 }
                 setupRecyclerView((RecyclerView) recyclerView, searchBar.getQuery());

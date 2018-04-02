@@ -11,8 +11,9 @@ import java.util.regex.Pattern;
  */
 public class Login {
 
-    /**  the one and only instance of this class for the singleton pattern */
-    public static Login INSTANCE = new Login();
+
+     //Methods declared static to avoid creating new instances.
+
 
     /**
      * Checks if a username is valid.
@@ -20,14 +21,17 @@ public class Login {
      * @param user the String to be checked for rulles
      * @return true if valid
      */
-    public static boolean isUsernameValid(String user) {
+    public static boolean isUsernameValid(CharSequence user) {
         return isValidEmail(user);
     }
 
     /**
-     * Check if an email is valid
+     * Checks if the email is valid.
+     *
+     * @param email the email to be checked
+     * @return true if email is valid
      */
-    public static Boolean isValidEmail(String email) {
+    public static Boolean isValidEmail(CharSequence email) {
         Pattern pattern = Pattern.compile("^.+@.+\\..+$");
         Matcher matcher = pattern.matcher(email);
 
@@ -35,9 +39,12 @@ public class Login {
     }
 
     /**
-     * Check if the password is valid
+     * Checks if password is valid.
+     *
+     * @param pass the password to be checked
+     * @return true if password is valid
      */
-    public static boolean isPasswordValid(String pass) {
+    public static boolean isPasswordValid(CharSequence pass) {
         //TODO: Replace this with your own logic
         return pass.length() >= 6;
     }

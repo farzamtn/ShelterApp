@@ -1,7 +1,6 @@
 package com.CS2340.shelterapp.Controller;
 
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -12,6 +11,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -59,13 +59,8 @@ public class AdminActivity extends AppCompatActivity
         email = emailBox.getText().toString();
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
+        fab.setOnClickListener(view -> Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                .setAction("Action", null).show());
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -130,19 +125,15 @@ public class AdminActivity extends AppCompatActivity
             AlertDialog.Builder builder = new AlertDialog.Builder(AdminActivity.this);
             builder.setMessage("Are you sure you want to sign out?");
 
-            builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int which) {
-                    FirebaseAuth.getInstance().signOut(); //Ending FireBase session for this user
-                    Intent intent = new Intent(getBaseContext(), LoginActivity.class);
-                    startActivity(intent);
-                    finish();
-                }
+            builder.setPositiveButton("YES", (dialog, which) -> {
+                FirebaseAuth.getInstance().signOut(); //Ending FireBase session for this user
+                Intent intent = new Intent(getBaseContext(), LoginActivity.class);
+                startActivity(intent);
+                finish();
             });
 
-            builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int which) {
-                    //Do nothing
-                }
+            builder.setNegativeButton("NO", (dialog, which) -> {
+                //Do nothing
             });
             builder.show();
         }
@@ -166,7 +157,7 @@ public class AdminActivity extends AppCompatActivity
         email = emailBox.getText().toString();
         boolean cancel = false;
 
-        if (email.equals("")) {
+        if (TextUtils.isEmpty(email)) {
             this.emailBox.setError(getString(R.string.error_field_required));
             focusView = emailBox;
             cancel = true;
@@ -191,15 +182,13 @@ public class AdminActivity extends AppCompatActivity
             focusView.requestFocus();
             return;
         }
-        if (disabled.equals("false")) {
+        if ("false".equals(disabled)) {
             disabled = "true";
             User.updateDBUserDisabled(disabled, user);
-            focusView = null;
             emailBox.setError("User Banned");
         } else {
             disabled = "false";
             User.updateDBUserDisabled(disabled, user);
-            focusView = null;
             emailBox.setError("User Unbanned");
         }
     }

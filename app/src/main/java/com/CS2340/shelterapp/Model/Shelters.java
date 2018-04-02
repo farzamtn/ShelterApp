@@ -10,7 +10,7 @@ import java.util.List;
  * @version 1.4
  */
 
-public class Shelters {
+public final class Shelters {
     public static final Shelters INSTANCE = new Shelters();
 
     private List<ShelterData> items;
@@ -29,7 +29,9 @@ public class Shelters {
 
     public ShelterData findItemByName(String name) {
         for (ShelterData sd: items) {
-            if (sd.getName().equals(name)) return sd;
+            if (sd.getName().equals(name)) {
+                return sd;
+            }
         }
 
         return null;
@@ -37,7 +39,9 @@ public class Shelters {
 
     public ShelterData findItemById(int id) {
         for (ShelterData sd : items) {
-            if (sd.getKey() == id) return sd;
+            if (sd.getKey() == id) {
+                return sd;
+            }
         }
 
         return null;
@@ -78,9 +82,9 @@ public class Shelters {
                 for (ShelterData d : items) {
                     String restrictions = d.getRestrictions().toLowerCase();
                     //adds shelters based on non-matches with the genderExclude keyword
-                    if (genderExclude.equals("women") && !restrictions.contains(genderExclude)) {
+                    if ("women".equals(genderExclude) && !restrictions.contains(genderExclude)) {
                         foundShelters.add(d);
-                    } else if (genderExclude.equals("men") && !restrictions.equals(genderExclude)) {
+                    } else if ("men".equals(genderExclude) && !restrictions.equals(genderExclude)) {
                         foundShelters.add(d);
                     }
                 }
@@ -95,7 +99,6 @@ public class Shelters {
                 break;
             default: //search is assumed to be for name, address, or special notes
                 for (ShelterData d : items) {
-                    String restrictions = d.getRestrictions().toLowerCase();
                     if (d.getName().toLowerCase().contains(query)
                             || d.getAddress().toLowerCase().contains(query)
                             || d.getSpecialNotes().toLowerCase().contains(query)) {

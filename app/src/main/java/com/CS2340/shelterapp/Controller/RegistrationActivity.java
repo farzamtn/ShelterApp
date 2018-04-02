@@ -2,12 +2,10 @@ package com.CS2340.shelterapp.Controller;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.RadioButton;
@@ -17,9 +15,6 @@ import android.widget.Toast;
 import com.CS2340.shelterapp.Model.Login;
 import com.CS2340.shelterapp.Model.Registration;
 import com.CS2340.shelterapp.R;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
@@ -36,14 +31,12 @@ public class RegistrationActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
     private DatabaseReference mRegisterDatabase;
-    private DatabaseReference conditionRef;
 
     // UI references.
     private EditText name;
     private EditText email;
     private EditText password;
     private EditText phoneNumber;
-    private Button registerButton;
     private ProgressBar progressBar;
     private RadioGroup userTypes;
 
@@ -63,7 +56,6 @@ public class RegistrationActivity extends AppCompatActivity {
         email = (EditText) findViewById(R.id.new_register_email);
         password = (EditText) findViewById(R.id.new_register_password);
         phoneNumber = (EditText) findViewById(R.id.new_register_phone);
-        registerButton = (Button) findViewById(R.id.new_register_button);
         progressBar = (ProgressBar) findViewById(R.id.registration_progress);
         userTypes = (RadioGroup) findViewById(R.id.userTypesRbutton);
     }
@@ -144,63 +136,60 @@ public class RegistrationActivity extends AppCompatActivity {
 
             //create user using FireBase email/password authentication server
             mAuth.createUserWithEmailAndPassword(user, pass)
-                    .addOnCompleteListener(RegistrationActivity.this, new OnCompleteListener<AuthResult>() {
-                        @Override
-                        public void onComplete(@NonNull Task<AuthResult> task) {
-                            progressBar.setVisibility(View.GONE);
-                            // If sign in fails, display a message to the user. If sign in succeeds
-                            // the auth state listener will be notified and logic to handle the
-                            // signed in user can be handled in the listener.
-                            if (!task.isSuccessful()) {
-                                Toast.makeText(RegistrationActivity.this, "Authentication failed." + task.getException(),
-                                        Toast.LENGTH_LONG).show();
-                            } else {
-                                if (mAuth.getCurrentUser() != null) {
-                                    UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
-                                            .setDisplayName(fullName)
-                                            .build();
+                    .addOnCompleteListener(RegistrationActivity.this, task -> {
+                        progressBar.setVisibility(View.GONE);
+                        // If sign in fails, display a message to the user. If sign in succeeds
+                        // the auth state listener will be notified and logic to handle the
+                        // signed in user can be handled in the listener.
+                        if (!task.isSuccessful()) {
+                            Toast.makeText(RegistrationActivity.this, "Authentication failed." + task.getException(),
+                                    Toast.LENGTH_LONG).show();
+                        } else {
+                            if (mAuth.getCurrentUser() != null) {
+                                UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
+                                        .setDisplayName(fullName)
+                                        .build();
 
-                                    //Updating user name
-                                    mAuth.getCurrentUser().updateProfile(profileUpdates).addOnCompleteListener(task1 -> {
-                                        if (!task1.isSuccessful()) {
-                                            Log.d("Update profile error", task.getException().toString());
-                                        }
-                                    });
+                                //Updating user name
+                                mAuth.getCurrentUser().updateProfile(profileUpdates).addOnCompleteListener(task1 -> {
+                                    if (!task1.isSuccessful()) {
+                                        Log.d("Update profile error", task.getException().toString());
+                                    }
+                                });
 
-                                    //Updating user email
-                                    mAuth.getCurrentUser().updateEmail(user).addOnCompleteListener(task12 -> {
-                                       if (!task.isSuccessful()) {
-                                          Log.d("Update Email error", task.getException().toString());
-                                       }
-                                    });
+                                //Updating user email
+                                mAuth.getCurrentUser().updateEmail(user).addOnCompleteListener(task12 -> {
+                                   if (!task.isSuccessful()) {
+                                      Log.d("Update Email error", task.getException().toString());
+                                   }
+                                });
 
-                                    //Adding new user information to DB with Uid being their Unique Key
-                                    String user_id = mAuth.getCurrentUser().getUid();
-                                    DatabaseReference current_user_db = mRegisterDatabase.child(user_id);
-                                    current_user_db.child("Name").setValue(fullName);
-                                    current_user_db.child("Email").setValue(user);
-                                    current_user_db.child("Phone Number").setValue(phoneNum);
-                                    current_user_db.child("User Type").setValue(userType);
-                                    current_user_db.child("Checked In").setValue(-1);
-                                    current_user_db.child("Beds").setValue(0);
-                                    current_user_db.child("Disabled").setValue("false");
-                                }
+                                //Adding new user information to DB with Uid being their Unique Key
+                                String user_id = mAuth.getCurrentUser().getUid();
+                                DatabaseReference current_user_db = mRegisterDatabase.child(user_id);
+                                current_user_db.child("Name").setValue(fullName);
+                                current_user_db.child("Email").setValue(user);
+                                current_user_db.child("Phone Number").setValue(phoneNum);
+                                current_user_db.child("User Type").setValue(userType);
+                                current_user_db.child("Checked In").setValue(-1);
+                                current_user_db.child("Beds").setValue(0);
+                                current_user_db.child("Disabled").setValue("false");
+                            }
 
-                                Toast.makeText(RegistrationActivity.this, "Your new account has been created. Welcome!",
-                                        Toast.LENGTH_LONG).show();
+                            Toast.makeText(RegistrationActivity.this, "Your new account has been created. Welcome!",
+                                    Toast.LENGTH_LONG).show();
 
-                                //Start the correct activity based on usertype
-                                if (userType.equals("Admin")){
-                                    startActivity(new Intent(RegistrationActivity.this, AdminActivity.class));
-                                } else if (userType.equals("Shelter Employee")) {
-                                    sendVerificationEmail();
-                                    startActivity(new Intent(RegistrationActivity.this, LoginActivity.class));
-                                    finish();
-                                } else if (userType.equals("Shelter Seeker")) {
-                                    sendVerificationEmail();
-                                    startActivity(new Intent(RegistrationActivity.this, LoginActivity.class));
-                                    finish();
-                                }
+                            //Start the correct activity based on usertype
+                            if ("Admin".equals(userType)){
+                                startActivity(new Intent(RegistrationActivity.this, AdminActivity.class));
+                            } else if ("Shelter Employee".equals(userType)) {
+                                sendVerificationEmail();
+                                startActivity(new Intent(RegistrationActivity.this, LoginActivity.class));
+                                finish();
+                            } else if ("Shelter Seeker".equals(userType)) {
+                                sendVerificationEmail();
+                                startActivity(new Intent(RegistrationActivity.this, LoginActivity.class));
+                                finish();
                             }
                         }
                     });
@@ -213,17 +202,14 @@ public class RegistrationActivity extends AppCompatActivity {
     private void sendVerificationEmail() {
         FirebaseUser user = mAuth.getCurrentUser();
         if (user != null) {
-            user.sendEmailVerification().addOnCompleteListener(new OnCompleteListener<Void>() {
-                @Override
-                public void onComplete(@NonNull Task<Void> task) {
-                    if (task.isSuccessful()) {
-                        Log.d("Verification Email:", "Email sent.");
-                    } else {
-                        Toast.makeText(RegistrationActivity.this, "Cannot send verification email. Please try again later." + task.getException(),
-                                Toast.LENGTH_LONG).show();
-                    }
-
+            user.sendEmailVerification().addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    Log.d("Verification Email:", "Email sent.");
+                } else {
+                    Toast.makeText(RegistrationActivity.this, "Cannot send verification email. Please try again later." + task.getException(),
+                            Toast.LENGTH_LONG).show();
                 }
+
             });
         } else {
             Toast.makeText(RegistrationActivity.this, "(For dev: null user) Cannot send verification email. Please try again later.",

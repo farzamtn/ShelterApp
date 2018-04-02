@@ -17,7 +17,8 @@
         android:layout_width="84dp"
         android:layout_height="73dp"
         android:paddingTop="@dimen/nav_header_vertical_spacing"
-        app:srcCompat="@drawable/georgia_tech_logo" />
+        app:srcCompat="@drawable/georgia_tech_logo"
+        android:contentDescription="GT LOGO" />
 
     <TextView
         android:layout_width="match_parent"

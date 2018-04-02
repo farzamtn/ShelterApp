@@ -9,17 +9,26 @@ package com.CS2340.shelterapp.Model;
  */
 public class Registration {
 
+    //Methods declared static to avoid creating new instances.
+
+
     /**
-     * Check if Name Field is valid
+     * Checks if a given name is valid.
+     *
+     * @param name the name to be checked
+     * @return true if valid
      */
-    public static boolean isNameValid(String name) {
+    public static boolean isNameValid(CharSequence name) {
         return name.length() >= 4;
     }
 
     /**
-     * Check if PhoneNumber Field is valid
+     * Checks if a given phone# is valid.
+     *
+     * @param phoneNumber the phone# to be checked
+     * @return true if valid
      */
-    public static boolean isPhoneNumberValid(String phoneNumber) {
+    public static boolean isPhoneNumberValid(CharSequence phoneNumber) {
         return phoneNumber.length() == 10;
     }
 }

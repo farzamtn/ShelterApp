@@ -1,5 +1,7 @@
 package com.CS2340.shelterapp.Model;
 
+import android.util.Log;
+
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -15,13 +17,17 @@ import com.google.firebase.database.ValueEventListener;
 
 public class User {
 
+
+     //Methods declared static to avoid creating new instances.
+
+
     /**
      * Update a given user's disabled attribute in the database
      * @param newDisabled string to be put into database
      * @param user user to be updated with new value
      */
     public static void updateDBUserDisabled(String newDisabled, DatabaseReference user) {
-        if (newDisabled == null || user == null) {
+        if ((newDisabled == null) || (user == null)) {
             return;
         }
         user.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -31,7 +37,7 @@ public class User {
             }
             @Override
             public void onCancelled(DatabaseError databaseError) {
-                System.out.print(databaseError.getMessage());
+                Log.d("UpdateDisabled: ", databaseError.getMessage());
             }
         });
     }
@@ -52,7 +58,7 @@ public class User {
             }
             @Override
             public void onCancelled(DatabaseError databaseError) {
-                System.out.print(databaseError.getMessage());
+                Log.d("UpdateCheckedIn: ", databaseError.getMessage());
             }
         });
     }
@@ -73,7 +79,7 @@ public class User {
             }
             @Override
             public void onCancelled(DatabaseError databaseError) {
-                System.out.print(databaseError.getMessage());
+                Log.d("updateDBBeds: ", databaseError.getMessage());
             }
         });
     }
