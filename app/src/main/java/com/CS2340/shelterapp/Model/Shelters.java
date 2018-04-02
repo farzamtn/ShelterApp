@@ -1,7 +1,5 @@
 package com.CS2340.shelterapp.Model;
 
-import android.util.Log;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,7 +32,6 @@ public class Shelters {
             if (sd.getName().equals(name)) return sd;
         }
 
-        Log.d("Can't Find Shelter", "Warning - Failed to find name: " + name);
         return null;
     }
 
@@ -43,7 +40,6 @@ public class Shelters {
             if (sd.getKey() == id) return sd;
         }
 
-        Log.d("Can't Find Shelter", "Warning - Failed to find id: " + id);
         return null;
     }
 

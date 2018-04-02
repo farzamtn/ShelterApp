@@ -181,6 +181,8 @@ public class LoginActivity extends AppCompatActivity {
                                         if (disabled.equals("true")) {
                                             View focusView = email;
                                             email.setError("User is Banned");
+                                            Toast.makeText(LoginActivity.this, "This account has been banned. Please contact the administrator.",
+                                                    Toast.LENGTH_LONG).show();
                                             FirebaseAuth.getInstance().signOut();
                                             return;
                                         }
